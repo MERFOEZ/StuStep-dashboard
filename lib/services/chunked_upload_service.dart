@@ -1,6 +1,7 @@
 import 'dart:async';
-import 'dart:html' as html;
 import 'dart:math';
+import 'package:cross_file/cross_file.dart';
+import 'package:http/http.dart' as http;
 
 class UploadProgressInfo {
   final double progress; // 0.0 to 1.0
@@ -30,7 +31,7 @@ class ChunkedUploadService {
 
   Future<String?> upload({
     required String fileId,
-    required html.File file,
+    required XFile file,
     required String uploadUrl,
     required bool isMock,
     required Function(UploadProgressInfo progressInfo) onProgress,
@@ -79,7 +80,7 @@ class ChunkedUploadService {
 
 class _UploadSession {
   final String fileId;
-  final html.File file;
+  final XFile file;
   final String uploadUrl;
   final bool isMock;
   final int chunkSize;
@@ -92,6 +93,7 @@ class _UploadSession {
   bool _isCancelled = false;
   bool _isUploading = false;
   Completer<String?>? _completer;
+  int _totalSize = 0;
 
   bool get isUploading => _isUploading;
   bool get isPaused => _isPaused;
@@ -107,13 +109,19 @@ class _UploadSession {
     required this.maxRetries,
   });
 
-  Future<String?> start() {
+  Future<String?> start() async {
     if (_isUploading) return _completer!.future;
     
     _isPaused = false;
     _isCancelled = false;
     _isUploading = true;
     _completer = Completer<String?>();
+
+    try {
+       _totalSize = await file.length();
+    } catch (e) {
+       _totalSize = 0;
+    }
 
     onStatusChanged('uploading', null);
     _uploadLoop();
@@ -147,7 +155,7 @@ class _UploadSession {
   }
 
   Future<void> _uploadLoop() async {
-    final int totalSize = file.size;
+    final int totalSize = _totalSize;
     final int totalChunks = (totalSize / chunkSize).ceil();
     final String sessionId = 'session_$fileId';
 
@@ -240,41 +248,26 @@ class _UploadSession {
   }
 
   Future<bool> _uploadChunkLive(int start, int end, String sessionId, int chunkIndex, int totalChunks) async {
-    final completer = Completer<bool>();
-
-    final html.Blob chunkBlob = file.slice(start, end);
-    final html.HttpRequest request = html.HttpRequest();
-
-    request.open('POST', uploadUrl);
-    request.setRequestHeader('X-Session-ID', sessionId);
-    request.setRequestHeader('X-Chunk-Index', chunkIndex.toString());
-    request.setRequestHeader('X-Total-Chunks', totalChunks.toString());
-    request.setRequestHeader('X-File-Name', Uri.encodeComponent(file.name));
-    request.setRequestHeader('Content-Type', 'application/octet-stream');
-
-    request.onLoad.listen((event) {
-      if (request.status == 200 || request.status == 201) {
-        completer.complete(true);
-      } else {
-        completer.completeError(Exception('Server responded with status code: ${request.status}'));
-      }
+    final stream = file.openRead(start, end);
+    final request = http.StreamedRequest('POST', Uri.parse(uploadUrl));
+    
+    request.headers.addAll({
+      'X-Session-ID': sessionId,
+      'X-Chunk-Index': chunkIndex.toString(),
+      'X-Total-Chunks': totalChunks.toString(),
+      'X-File-Name': Uri.encodeComponent(file.name),
+      'Content-Type': 'application/octet-stream',
+      'Content-Length': (end - start).toString(),
     });
 
-    request.onError.listen((event) {
-      completer.completeError(Exception('Network error in XMLHttpRequest'));
-    });
+    stream.listen(request.sink.add, onDone: request.sink.close, onError: request.sink.addError);
 
-    // Native reader to read chunk without consuming full file memory
-    final reader = html.FileReader();
-    reader.onLoadEnd.listen((event) {
-      if (reader.result != null) {
-        request.send(reader.result);
-      } else {
-        completer.completeError(Exception('Failed to read slice buffer'));
-      }
-    });
+    final response = await request.send();
 
-    reader.readAsArrayBuffer(chunkBlob);
-    return completer.future;
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return true;
+    } else {
+      throw Exception('Server responded with status code: ${response.statusCode}');
+    }
   }
 }

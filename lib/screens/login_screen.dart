@@ -10,7 +10,8 @@ class LoginScreen extends StatefulWidget {
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStateMixin {
+class _LoginScreenState extends State<LoginScreen>
+    with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -36,12 +37,13 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
       ),
     );
 
-    _slideAnimation = Tween<Offset>(begin: const Offset(0.0, 0.08), end: Offset.zero).animate(
-      CurvedAnimation(
-        parent: _animationController,
-        curve: const Interval(0.1, 0.9, curve: Curves.easeOutCubic),
-      ),
-    );
+    _slideAnimation =
+        Tween<Offset>(begin: const Offset(0.0, 0.08), end: Offset.zero).animate(
+          CurvedAnimation(
+            parent: _animationController,
+            curve: const Interval(0.1, 0.9, curve: Curves.easeOutCubic),
+          ),
+        );
 
     _animationController.forward();
   }
@@ -69,12 +71,17 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
               children: [
                 const Icon(Icons.check_circle_outline, color: Colors.white),
                 const SizedBox(width: 10),
-                Text(t('Sign in successful!', 'تم تسجيل الدخول بنجاح!'), style: const TextStyle(color: Colors.white)),
+                Text(
+                  t('Sign in successful!', 'تم تسجيل الدخول بنجاح!'),
+                  style: const TextStyle(color: Colors.white),
+                ),
               ],
             ),
             backgroundColor: const Color(0xFF10B981),
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
           ),
         );
       }
@@ -94,7 +101,9 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
     const fieldBgColor = Color(0xFF090E1A); // Deep black/blue input fields
 
     return Directionality(
-      textDirection: authProvider.isArabic ? TextDirection.rtl : TextDirection.ltr,
+      textDirection: authProvider.isArabic
+          ? TextDirection.rtl
+          : TextDirection.ltr,
       child: Scaffold(
         body: Stack(
           children: [
@@ -136,7 +145,10 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
             Center(
               child: SingleChildScrollView(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 36.0),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24.0,
+                    vertical: 36.0,
+                  ),
                   child: FadeTransition(
                     opacity: _fadeAnimation,
                     child: SlideTransition(
@@ -146,7 +158,10 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                         decoration: BoxDecoration(
                           color: cardBgColor,
                           borderRadius: BorderRadius.circular(24),
-                          border: Border.all(color: Colors.white.withOpacity(0.05), width: 1.5),
+                          border: Border.all(
+                            color: Colors.white.withOpacity(0.05),
+                            width: 1.5,
+                          ),
                           boxShadow: [
                             BoxShadow(
                               color: Colors.black.withOpacity(0.5),
@@ -156,7 +171,10 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                           ],
                         ),
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 40.0, vertical: 48.0),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 40.0,
+                            vertical: 48.0,
+                          ),
                           child: Form(
                             key: _formKey,
                             child: Column(
@@ -168,11 +186,14 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                                   child: Container(
                                     padding: const EdgeInsets.all(12),
                                     decoration: BoxDecoration(
-                                      color: const Color(0xFF00ADEF).withOpacity(0.08),
+                                      color: const Color(
+                                        0xFF00ADEF,
+                                      ).withOpacity(0.08),
                                       shape: BoxShape.circle,
                                     ),
                                     child: const Icon(
-                                      Icons.school_rounded, // Restored graduation cap logo
+                                      Icons
+                                          .school_rounded, // Restored graduation cap logo
                                       size: 44,
                                       color: accentColor,
                                     ),
@@ -195,7 +216,10 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
 
                                 // Subtitle restored to STUSTEP
                                 Text(
-                                  t('Sign in to manage STUSTEP Academic Portal', 'سجل دخولك لإدارة لوحة تحكم STUSTEP الأكاديمية'),
+                                  t(
+                                    'Sign in to manage STUSTEP Academic Portal',
+                                    'سجل دخولك لإدارة لوحة تحكم STUSTEP الأكاديمية',
+                                  ),
                                   textAlign: TextAlign.center,
                                   style: const TextStyle(
                                     fontSize: 12,
@@ -207,21 +231,35 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                                 // Error Banner
                                 if (authProvider.errorMessage != null)
                                   Container(
-                                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 12,
+                                      horizontal: 16,
+                                    ),
                                     margin: const EdgeInsets.only(bottom: 24),
                                     decoration: BoxDecoration(
                                       color: Colors.redAccent.withOpacity(0.12),
                                       borderRadius: BorderRadius.circular(12),
-                                      border: Border.all(color: Colors.redAccent.withOpacity(0.3)),
+                                      border: Border.all(
+                                        color: Colors.redAccent.withOpacity(
+                                          0.3,
+                                        ),
+                                      ),
                                     ),
                                     child: Row(
                                       children: [
-                                        const Icon(Icons.error_outline_rounded, color: Colors.redAccent, size: 20),
+                                        const Icon(
+                                          Icons.error_outline_rounded,
+                                          color: Colors.redAccent,
+                                          size: 20,
+                                        ),
                                         const SizedBox(width: 12),
                                         Expanded(
                                           child: Text(
                                             authProvider.errorMessage!,
-                                            style: const TextStyle(color: Color(0xFFFCA5A5), fontSize: 13),
+                                            style: const TextStyle(
+                                              color: Color(0xFFFCA5A5),
+                                              fontSize: 13,
+                                            ),
                                           ),
                                         ),
                                       ],
@@ -233,38 +271,77 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                                   controller: _emailController,
                                   keyboardType: TextInputType.emailAddress,
                                   textInputAction: TextInputAction.next,
-                                  textAlign: authProvider.isArabic ? TextAlign.right : TextAlign.left,
-                                  style: const TextStyle(color: Colors.white, fontSize: 14),
+                                  textAlign: authProvider.isArabic
+                                      ? TextAlign.right
+                                      : TextAlign.left,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 14,
+                                  ),
                                   decoration: InputDecoration(
-                                    hintText: t('Admin Email', 'البريد الإلكتروني'),
-                                    hintStyle: const TextStyle(color: Colors.white24, fontSize: 13),
-                                    prefixIcon: const Icon(Icons.person_outline_rounded, color: accentColor, size: 18),
+                                    hintText: t(
+                                      'Admin Email',
+                                      'البريد الإلكتروني',
+                                    ),
+                                    hintStyle: const TextStyle(
+                                      color: Colors.white24,
+                                      fontSize: 13,
+                                    ),
+                                    prefixIcon: const Icon(
+                                      Icons.person_outline_rounded,
+                                      color: accentColor,
+                                      size: 18,
+                                    ),
                                     filled: true,
                                     fillColor: fieldBgColor,
-                                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                      vertical: 16,
+                                    ),
                                     enabledBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(12),
-                                      borderSide: const BorderSide(color: Colors.white10),
+                                      borderSide: const BorderSide(
+                                        color: Colors.white10,
+                                      ),
                                     ),
                                     focusedBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(12),
-                                      borderSide: const BorderSide(color: accentColor, width: 1.2),
+                                      borderSide: const BorderSide(
+                                        color: accentColor,
+                                        width: 1.2,
+                                      ),
                                     ),
                                     errorBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(12),
-                                      borderSide: BorderSide(color: Colors.redAccent.withOpacity(0.5)),
+                                      borderSide: BorderSide(
+                                        color: Colors.redAccent.withOpacity(
+                                          0.5,
+                                        ),
+                                      ),
                                     ),
                                     focusedErrorBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(12),
-                                      borderSide: const BorderSide(color: Colors.redAccent, width: 1.2),
+                                      borderSide: const BorderSide(
+                                        color: Colors.redAccent,
+                                        width: 1.2,
+                                      ),
                                     ),
                                   ),
                                   validator: (value) {
                                     if (value == null || value.isEmpty) {
-                                      return t('Please enter email', 'يرجى إدخال البريد الإلكتروني');
+                                      return t(
+                                        'Please enter email',
+                                        'يرجى إدخال البريد الإلكتروني',
+                                      );
                                     }
-                                    if (!authProvider.useMock && !RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
-                                      return t('Please enter a valid email', 'يرجى إدخال بريد إلكتروني صالح');
+                                    if (!authProvider.useMock &&
+                                        !RegExp(
+                                          r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                                        ).hasMatch(value)) {
+                                      return t(
+                                        'Please enter a valid email',
+                                        'يرجى إدخال بريد إلكتروني صالح',
+                                      );
                                     }
                                     return null;
                                   },
@@ -277,15 +354,29 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                                   obscureText: _obscurePassword,
                                   textInputAction: TextInputAction.done,
                                   onFieldSubmitted: (_) => _handleLogin(t),
-                                  textAlign: authProvider.isArabic ? TextAlign.right : TextAlign.left,
-                                  style: const TextStyle(color: Colors.white, fontSize: 14),
+                                  textAlign: authProvider.isArabic
+                                      ? TextAlign.right
+                                      : TextAlign.left,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 14,
+                                  ),
                                   decoration: InputDecoration(
                                     hintText: t('Password', 'كلمة المرور'),
-                                    hintStyle: const TextStyle(color: Colors.white24, fontSize: 13),
-                                    prefixIcon: const Icon(Icons.lock_outline_rounded, color: accentColor, size: 18),
+                                    hintStyle: const TextStyle(
+                                      color: Colors.white24,
+                                      fontSize: 13,
+                                    ),
+                                    prefixIcon: const Icon(
+                                      Icons.lock_outline_rounded,
+                                      color: accentColor,
+                                      size: 18,
+                                    ),
                                     suffixIcon: IconButton(
                                       icon: Icon(
-                                        _obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                                        _obscurePassword
+                                            ? Icons.visibility_off_outlined
+                                            : Icons.visibility_outlined,
                                         color: Colors.white24,
                                         size: 18,
                                       ),
@@ -297,27 +388,45 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                                     ),
                                     filled: true,
                                     fillColor: fieldBgColor,
-                                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                      vertical: 16,
+                                    ),
                                     enabledBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(12),
-                                      borderSide: const BorderSide(color: Colors.white10),
+                                      borderSide: const BorderSide(
+                                        color: Colors.white10,
+                                      ),
                                     ),
                                     focusedBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(12),
-                                      borderSide: const BorderSide(color: accentColor, width: 1.2),
+                                      borderSide: const BorderSide(
+                                        color: accentColor,
+                                        width: 1.2,
+                                      ),
                                     ),
                                     errorBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(12),
-                                      borderSide: BorderSide(color: Colors.redAccent.withOpacity(0.5)),
+                                      borderSide: BorderSide(
+                                        color: Colors.redAccent.withOpacity(
+                                          0.5,
+                                        ),
+                                      ),
                                     ),
                                     focusedErrorBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(12),
-                                      borderSide: const BorderSide(color: Colors.redAccent, width: 1.2),
+                                      borderSide: const BorderSide(
+                                        color: Colors.redAccent,
+                                        width: 1.2,
+                                      ),
                                     ),
                                   ),
                                   validator: (value) {
                                     if (value == null || value.isEmpty) {
-                                      return t('Please enter password', 'يرجى إدخال كلمة المرور');
+                                      return t(
+                                        'Please enter password',
+                                        'يرجى إدخال كلمة المرور',
+                                      );
                                     }
                                     return null;
                                   },
@@ -326,18 +435,26 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
 
                                 // Remember Me & Forgot Password row matching reference design
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     TextButton(
                                       onPressed: () {},
                                       style: TextButton.styleFrom(
                                         padding: EdgeInsets.zero,
                                         minimumSize: Size.zero,
-                                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                        tapTargetSize:
+                                            MaterialTapTargetSize.shrinkWrap,
                                       ),
                                       child: Text(
-                                        t('Forgot Password?', 'نسيت كلمة المرور؟'),
-                                        style: const TextStyle(color: accentColor, fontSize: 12),
+                                        t(
+                                          'Forgot Password?',
+                                          'نسيت كلمة المرور؟',
+                                        ),
+                                        style: const TextStyle(
+                                          color: accentColor,
+                                          fontSize: 12,
+                                        ),
                                       ),
                                     ),
                                     Row(
@@ -345,7 +462,10 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                                       children: [
                                         Text(
                                           t('Remember Me', 'تذكرني'),
-                                          style: const TextStyle(color: Colors.white54, fontSize: 12),
+                                          style: const TextStyle(
+                                            color: Colors.white54,
+                                            fontSize: 12,
+                                          ),
                                         ),
                                         const SizedBox(width: 8),
                                         SizedBox(
@@ -360,8 +480,14 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                                             },
                                             activeColor: accentColor,
                                             checkColor: Colors.white,
-                                            side: const BorderSide(color: Colors.white24, width: 1.5),
-                                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+                                            side: const BorderSide(
+                                              color: Colors.white24,
+                                              width: 1.5,
+                                            ),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(4),
+                                            ),
                                           ),
                                         ),
                                       ],
@@ -374,7 +500,9 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                                 SizedBox(
                                   height: 48,
                                   child: ElevatedButton(
-                                    onPressed: authProvider.isLoading ? null : () => _handleLogin(t),
+                                    onPressed: authProvider.isLoading
+                                        ? null
+                                        : () => _handleLogin(t),
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: accentColor,
                                       foregroundColor: Colors.white,
@@ -390,11 +518,17 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                                             width: 20,
                                             child: CircularProgressIndicator(
                                               strokeWidth: 2,
-                                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                              valueColor:
+                                                  AlwaysStoppedAnimation<Color>(
+                                                    Colors.white,
+                                                  ),
                                             ),
                                           )
                                         : Text(
-                                            t('Sign In to Dashboard', 'تسجيل الدخول'),
+                                            t(
+                                              'Sign In to Dashboard',
+                                              'تسجيل الدخول',
+                                            ),
                                             style: const TextStyle(
                                               fontSize: 15,
                                               fontWeight: FontWeight.bold,
@@ -406,20 +540,30 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
 
                                 // Simulation Mode Toggler
                                 Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 10,
+                                  ),
                                   decoration: BoxDecoration(
                                     color: Colors.white.withOpacity(0.02),
                                     borderRadius: BorderRadius.circular(12),
-                                    border: Border.all(color: Colors.white.withOpacity(0.04)),
+                                    border: Border.all(
+                                      color: Colors.white.withOpacity(0.04),
+                                    ),
                                   ),
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.stretch,
                                     children: [
                                       Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
                                           Text(
-                                            t('Simulation Mode', 'وضع المحاكاة (Simulation)'),
+                                            t(
+                                              'Simulation Mode',
+                                              'وضع المحاكاة (Simulation)',
+                                            ),
                                             style: const TextStyle(
                                               color: Colors.white38,
                                               fontSize: 11,
@@ -430,11 +574,15 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                                             height: 24,
                                             child: Switch(
                                               value: authProvider.useMock,
-                                              onChanged: (val) => authProvider.toggleMockMode(val),
-                                              activeColor: accentColor,
-                                              activeTrackColor: accentColor.withOpacity(0.15),
-                                              inactiveThumbColor: Colors.white24,
-                                              inactiveTrackColor: Colors.white10,
+                                              onChanged: (val) => authProvider
+                                                  .toggleMockMode(val),
+                                              activeThumbColor: accentColor,
+                                              activeTrackColor: accentColor
+                                                  .withOpacity(0.15),
+                                              inactiveThumbColor:
+                                                  Colors.white24,
+                                              inactiveTrackColor:
+                                                  Colors.white10,
                                             ),
                                           ),
                                         ],
@@ -442,8 +590,15 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                                       if (authProvider.useMock) ...[
                                         const SizedBox(height: 4),
                                         Text(
-                                          t('Demo: admin@stustep.com | Pass: admin123', 'حساب تجريبي: admin@stustep.com | كلمة: admin123'),
-                                          style: const TextStyle(color: Colors.white38, fontSize: 10, fontFamily: 'monospace'),
+                                          t(
+                                            'Demo: admin@stustep.com | Pass: admin123',
+                                            'حساب تجريبي: admin@stustep.com | كلمة: admin123',
+                                          ),
+                                          style: const TextStyle(
+                                            color: Colors.white38,
+                                            fontSize: 10,
+                                            fontFamily: 'monospace',
+                                          ),
                                         ),
                                       ],
                                     ],
@@ -453,7 +608,10 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
 
                                 // Footer system rights restored to STUSTEP
                                 Text(
-                                  t('© 2026 STUSTEP - All Rights Reserved', '© 2026 نظام STUSTEP - جميع الحقوق محفوظة'),
+                                  t(
+                                    '© 2026 STUSTEP - All Rights Reserved',
+                                    '© 2026 نظام STUSTEP - جميع الحقوق محفوظة',
+                                  ),
                                   textAlign: TextAlign.center,
                                   style: const TextStyle(
                                     color: Colors.white24,

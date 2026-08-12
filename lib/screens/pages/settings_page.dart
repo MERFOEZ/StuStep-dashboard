@@ -27,9 +27,9 @@ class _SettingsPageState extends State<SettingsPage> {
 
   // Preferences States (emailAlerts, securityLogs etc.)
   bool _emailAlerts = true;
-  bool _securityLogs = true;
-  bool _maintenanceNotif = false;
-  bool _systemAudio = false;
+  final bool _securityLogs = true;
+  final bool _maintenanceNotif = false;
+  final bool _systemAudio = false;
 
   @override
   void initState() {
@@ -62,9 +62,15 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
-    final accentColor = const Color(0xFF00ADEF); // Cyan/sky blue accent from screenshot
-    final cardColor = const Color(0xFF10192D); // Dark blue card color from screenshot
-    final fieldBgColor = const Color(0xFF090E1A); // Deep input field background from screenshot
+    final accentColor = const Color(
+      0xFF00ADEF,
+    ); // Cyan/sky blue accent from screenshot
+    final cardColor = const Color(
+      0xFF10192D,
+    ); // Dark blue card color from screenshot
+    final fieldBgColor = const Color(
+      0xFF090E1A,
+    ); // Deep input field background from screenshot
     final bodyBgColor = const Color(0xFF0B0F19); // Background color of page
 
     final size = MediaQuery.of(context).size;
@@ -92,27 +98,51 @@ class _SettingsPageState extends State<SettingsPage> {
                           // Left side: Security & Password
                           Expanded(
                             flex: 5,
-                            child: _buildSecurityCard(authProvider, cardColor, fieldBgColor, accentColor),
+                            child: _buildSecurityCard(
+                              authProvider,
+                              cardColor,
+                              fieldBgColor,
+                              accentColor,
+                            ),
                           ),
                           const SizedBox(width: 24),
                           // Right side: Personal Info
                           Expanded(
                             flex: 6,
-                            child: _buildPersonalInfoCard(authProvider, cardColor, fieldBgColor, accentColor),
+                            child: _buildPersonalInfoCard(
+                              authProvider,
+                              cardColor,
+                              fieldBgColor,
+                              accentColor,
+                            ),
                           ),
                         ],
                       )
                     : Column(
                         children: [
-                          _buildPersonalInfoCard(authProvider, cardColor, fieldBgColor, accentColor),
+                          _buildPersonalInfoCard(
+                            authProvider,
+                            cardColor,
+                            fieldBgColor,
+                            accentColor,
+                          ),
                           const SizedBox(height: 24),
-                          _buildSecurityCard(authProvider, cardColor, fieldBgColor, accentColor),
+                          _buildSecurityCard(
+                            authProvider,
+                            cardColor,
+                            fieldBgColor,
+                            accentColor,
+                          ),
                         ],
                       ),
                 const SizedBox(height: 24),
 
                 // 3. System Preferences & Dev Tools (Combined below in the same style)
-                _buildSystemPreferencesRow(authProvider, cardColor, accentColor),
+                _buildSystemPreferencesRow(
+                  authProvider,
+                  cardColor,
+                  accentColor,
+                ),
               ],
             ),
           ),
@@ -125,13 +155,17 @@ class _SettingsPageState extends State<SettingsPage> {
   // WIDGET BUILDERS (MATCHING SCREENSHOT STYLES)
   // ==========================================
 
-  Widget _buildProfileBanner(AuthProvider auth, Color cardColor, Color accentColor) {
+  Widget _buildProfileBanner(
+    AuthProvider auth,
+    Color cardColor,
+    Color accentColor,
+  ) {
     final user = auth.currentUser;
     final roleText = user?.role == 'admin'
         ? _t('System Administrator', 'مسؤول النظام')
         : user?.role == 'teacher'
-            ? _t('Teacher', 'معلم')
-            : _t('Student', 'طالب');
+        ? _t('Teacher', 'معلم')
+        : _t('Student', 'طالب');
 
     return Container(
       padding: const EdgeInsets.all(24),
@@ -200,7 +234,12 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  Widget _buildPersonalInfoCard(AuthProvider auth, Color cardColor, Color fieldBgColor, Color accentColor) {
+  Widget _buildPersonalInfoCard(
+    AuthProvider auth,
+    Color cardColor,
+    Color fieldBgColor,
+    Color accentColor,
+  ) {
     return Container(
       padding: const EdgeInsets.all(28),
       decoration: BoxDecoration(
@@ -238,12 +277,16 @@ class _SettingsPageState extends State<SettingsPage> {
               icon: Icons.edit_rounded,
               accentColor: accentColor,
               fieldBgColor: fieldBgColor,
-              validator: (val) => val == null || val.isEmpty ? _t('Name cannot be empty', 'الاسم لا يمكن أن يكون فارغاً') : null,
+              validator: (val) => val == null || val.isEmpty
+                  ? _t('Name cannot be empty', 'الاسم لا يمكن أن يكون فارغاً')
+                  : null,
             ),
             const SizedBox(height: 20),
 
             // Official Email Field
-            _buildCustomInputLabel(_t('Official Email', 'البريد الإلكتروني الرسمي')),
+            _buildCustomInputLabel(
+              _t('Official Email', 'البريد الإلكتروني الرسمي'),
+            ),
             const SizedBox(height: 8),
             _buildCustomTextField(
               controller: _emailController,
@@ -255,7 +298,9 @@ class _SettingsPageState extends State<SettingsPage> {
             const SizedBox(height: 20),
 
             // Contact Phone Number Field
-            _buildCustomInputLabel(_t('Contact Phone Number', 'رقم الهاتف للتواصل')),
+            _buildCustomInputLabel(
+              _t('Contact Phone Number', 'رقم الهاتف للتواصل'),
+            ),
             const SizedBox(height: 8),
             _buildCustomTextField(
               controller: _phoneController,
@@ -270,23 +315,35 @@ class _SettingsPageState extends State<SettingsPage> {
               width: double.infinity,
               height: 48,
               child: ElevatedButton.icon(
-                onPressed: _isProfileUpdating ? null : () => _updateProfile(auth),
+                onPressed: _isProfileUpdating
+                    ? null
+                    : () => _updateProfile(auth),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: accentColor,
                   foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                   elevation: 2,
                 ),
                 icon: _isProfileUpdating
                     ? const SizedBox(
                         width: 16,
                         height: 16,
-                        child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation<Color>(Colors.white)),
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Colors.white,
+                          ),
+                        ),
                       )
                     : const Icon(Icons.check_rounded, size: 18),
                 label: Text(
                   _t('Update Data', 'تحديث البيانات'),
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
+                  ),
                 ),
               ),
             ),
@@ -296,7 +353,12 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  Widget _buildSecurityCard(AuthProvider auth, Color cardColor, Color fieldBgColor, Color accentColor) {
+  Widget _buildSecurityCard(
+    AuthProvider auth,
+    Color cardColor,
+    Color fieldBgColor,
+    Color accentColor,
+  ) {
     return Container(
       padding: const EdgeInsets.all(28),
       decoration: BoxDecoration(
@@ -330,15 +392,23 @@ class _SettingsPageState extends State<SettingsPage> {
             if (_passwordError != null) ...[
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 12,
+                  horizontal: 16,
+                ),
                 decoration: BoxDecoration(
                   color: const Color(0xFF451A22), // Deep red background
                   borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: const Color(0xFFEF4444).withOpacity(0.4)),
+                  border: Border.all(
+                    color: const Color(0xFFEF4444).withOpacity(0.4),
+                  ),
                 ),
                 child: Text(
                   _passwordError!,
-                  style: const TextStyle(color: Color(0xFFFCA5A5), fontSize: 12),
+                  style: const TextStyle(
+                    color: Color(0xFFFCA5A5),
+                    fontSize: 12,
+                  ),
                   textAlign: TextAlign.center,
                 ),
               ),
@@ -346,7 +416,9 @@ class _SettingsPageState extends State<SettingsPage> {
             ],
 
             // Current Password
-            _buildCustomInputLabel(_t('Current Password', 'كلمة المرور الحالية')),
+            _buildCustomInputLabel(
+              _t('Current Password', 'كلمة المرور الحالية'),
+            ),
             const SizedBox(height: 8),
             _buildCustomTextField(
               controller: _currentPasswordController,
@@ -354,7 +426,12 @@ class _SettingsPageState extends State<SettingsPage> {
               accentColor: accentColor,
               fieldBgColor: fieldBgColor,
               obscureText: true,
-              validator: (val) => val == null || val.isEmpty ? _t('Current password is required', 'كلمة المرور الحالية مطلوبة') : null,
+              validator: (val) => val == null || val.isEmpty
+                  ? _t(
+                      'Current password is required',
+                      'كلمة المرور الحالية مطلوبة',
+                    )
+                  : null,
             ),
             const SizedBox(height: 20),
 
@@ -367,12 +444,19 @@ class _SettingsPageState extends State<SettingsPage> {
               accentColor: accentColor,
               fieldBgColor: fieldBgColor,
               obscureText: true,
-              validator: (val) => val == null || val.length < 6 ? _t('Password must be at least 6 characters', 'يجب أن تتكون كلمة المرور من 6 أحرف على الأقل') : null,
+              validator: (val) => val == null || val.length < 6
+                  ? _t(
+                      'Password must be at least 6 characters',
+                      'يجب أن تتكون كلمة المرور من 6 أحرف على الأقل',
+                    )
+                  : null,
             ),
             const SizedBox(height: 20),
 
             // Confirm Password
-            _buildCustomInputLabel(_t('Confirm New Password', 'تأكيد كلمة المرور')),
+            _buildCustomInputLabel(
+              _t('Confirm New Password', 'تأكيد كلمة المرور'),
+            ),
             const SizedBox(height: 8),
             _buildCustomTextField(
               controller: _confirmPasswordController,
@@ -380,7 +464,9 @@ class _SettingsPageState extends State<SettingsPage> {
               accentColor: accentColor,
               fieldBgColor: fieldBgColor,
               obscureText: true,
-              validator: (val) => val != _newPasswordController.text ? _t('Passwords do not match', 'كلمتا المرور غير متطابقتين') : null,
+              validator: (val) => val != _newPasswordController.text
+                  ? _t('Passwords do not match', 'كلمتا المرور غير متطابقتين')
+                  : null,
             ),
             const SizedBox(height: 32),
 
@@ -389,23 +475,35 @@ class _SettingsPageState extends State<SettingsPage> {
               width: double.infinity,
               height: 48,
               child: ElevatedButton.icon(
-                onPressed: _isPasswordUpdating ? null : () => _updatePassword(auth),
+                onPressed: _isPasswordUpdating
+                    ? null
+                    : () => _updatePassword(auth),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: accentColor,
                   foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                   elevation: 2,
                 ),
                 icon: _isPasswordUpdating
                     ? const SizedBox(
                         width: 16,
                         height: 16,
-                        child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation<Color>(Colors.white)),
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Colors.white,
+                          ),
+                        ),
                       )
                     : const Icon(Icons.security_rounded, size: 18),
                 label: Text(
                   _t('Update Password', 'تحديث كلمة المرور'),
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
+                  ),
                 ),
               ),
             ),
@@ -415,7 +513,11 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  Widget _buildSystemPreferencesRow(AuthProvider authProvider, Color cardColor, Color accentColor) {
+  Widget _buildSystemPreferencesRow(
+    AuthProvider authProvider,
+    Color cardColor,
+    Color accentColor,
+  ) {
     final size = MediaQuery.of(context).size;
     final isWide = size.width > 950;
 
@@ -436,16 +538,33 @@ class _SettingsPageState extends State<SettingsPage> {
                 const SizedBox(width: 8),
                 Text(
                   _t('Dashboard Preferences', 'تفضيلات لوحة التحكم'),
-                  style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ],
             ),
             const SizedBox(height: 24),
             SwitchListTile(
-              title: Text(_t('Arabic Language', 'اللغة العربية'), style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600)),
-              subtitle: Text(_t('Change dashboard settings language to Arabic.', 'تغيير لغة إعدادات لوحة التحكم إلى اللغة العربية.'), style: const TextStyle(color: Colors.white38, fontSize: 11)),
+              title: Text(
+                _t('Arabic Language', 'اللغة العربية'),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              subtitle: Text(
+                _t(
+                  'Change dashboard settings language to Arabic.',
+                  'تغيير لغة إعدادات لوحة التحكم إلى اللغة العربية.',
+                ),
+                style: const TextStyle(color: Colors.white38, fontSize: 11),
+              ),
               value: authProvider.isArabic,
-              activeColor: accentColor,
+              activeThumbColor: accentColor,
               contentPadding: EdgeInsets.zero,
               onChanged: (val) {
                 authProvider.setArabic(val);
@@ -453,10 +572,23 @@ class _SettingsPageState extends State<SettingsPage> {
             ),
             const Divider(height: 24, color: Colors.white10),
             SwitchListTile(
-              title: Text(_t('Email Alerts', 'تنبيهات البريد الإلكتروني'), style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600)),
-              subtitle: Text(_t('Receive security alerts and system updates via email.', 'تلقي تنبيهات الأمان وتحديثات النظام عبر البريد الإلكتروني.'), style: const TextStyle(color: Colors.white38, fontSize: 11)),
+              title: Text(
+                _t('Email Alerts', 'تنبيهات البريد الإلكتروني'),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              subtitle: Text(
+                _t(
+                  'Receive security alerts and system updates via email.',
+                  'تلقي تنبيهات الأمان وتحديثات النظام عبر البريد الإلكتروني.',
+                ),
+                style: const TextStyle(color: Colors.white38, fontSize: 11),
+              ),
               value: _emailAlerts,
-              activeColor: accentColor,
+              activeThumbColor: accentColor,
               contentPadding: EdgeInsets.zero,
               onChanged: (val) {
                 setState(() {
@@ -482,20 +614,41 @@ class _SettingsPageState extends State<SettingsPage> {
           children: [
             Row(
               children: [
-                Icon(Icons.developer_board_rounded, color: accentColor, size: 22),
+                Icon(
+                  Icons.developer_board_rounded,
+                  color: accentColor,
+                  size: 22,
+                ),
                 const SizedBox(width: 8),
                 Text(
                   _t('Developer Sandbox', 'أدوات المطور والتجربة'),
-                  style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ],
             ),
             const SizedBox(height: 24),
             SwitchListTile(
-              title: Text(_t('Simulation Mode', 'وضع المحاكاة'), style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600)),
-              subtitle: Text(_t('Simulates system functionality without hitting Firebase servers.', 'محاكاة كاملة للنظام دون الاتصال الفعلي بخوادم Firebase.'), style: const TextStyle(color: Colors.white38, fontSize: 11)),
+              title: Text(
+                _t('Simulation Mode', 'وضع المحاكاة'),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              subtitle: Text(
+                _t(
+                  'Simulates system functionality without hitting Firebase servers.',
+                  'محاكاة كاملة للنظام دون الاتصال الفعلي بخوادم Firebase.',
+                ),
+                style: const TextStyle(color: Colors.white38, fontSize: 11),
+              ),
               value: authProvider.useMock,
-              activeColor: accentColor,
+              activeThumbColor: accentColor,
               contentPadding: EdgeInsets.zero,
               onChanged: (val) {
                 authProvider.toggleMockMode(val);
@@ -506,13 +659,23 @@ class _SettingsPageState extends State<SettingsPage> {
               onPressed: () {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text(_t('Mock Database Seeded Successfully!', 'تمت إعادة تهيئة البيانات الافتراضية بنجاح!')),
+                    content: Text(
+                      _t(
+                        'Mock Database Seeded Successfully!',
+                        'تمت إعادة تهيئة البيانات الافتراضية بنجاح!',
+                      ),
+                    ),
                     backgroundColor: const Color(0xFF10B981),
                   ),
                 );
               },
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.white.withOpacity(0.05), foregroundColor: Colors.white),
-              child: Text(_t('Reset Mock Sandbox Data', 'إعادة ضبط بيانات المحاكاة')),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white.withOpacity(0.05),
+                foregroundColor: Colors.white,
+              ),
+              child: Text(
+                _t('Reset Mock Sandbox Data', 'إعادة ضبط بيانات المحاكاة'),
+              ),
             ),
           ],
         ),
@@ -572,7 +735,10 @@ class _SettingsPageState extends State<SettingsPage> {
       decoration: InputDecoration(
         filled: true,
         fillColor: fieldBgColor,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 16,
+        ),
         suffixIcon: Icon(
           icon,
           color: readOnly ? Colors.white10 : accentColor,
@@ -622,7 +788,12 @@ class _SettingsPageState extends State<SettingsPage> {
       if (success && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(_t('Profile details updated successfully!', 'تم تحديث البيانات الشخصية بنجاح!')),
+            content: Text(
+              _t(
+                'Profile details updated successfully!',
+                'تم تحديث البيانات الشخصية بنجاح!',
+              ),
+            ),
             backgroundColor: const Color(0xFF10B981),
             behavior: SnackBarBehavior.floating,
           ),
@@ -657,14 +828,21 @@ class _SettingsPageState extends State<SettingsPage> {
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(_t('Password updated successfully!', 'تم تحديث كلمة المرور بنجاح!')),
+            content: Text(
+              _t(
+                'Password updated successfully!',
+                'تم تحديث كلمة المرور بنجاح!',
+              ),
+            ),
             backgroundColor: const Color(0xFF10B981),
             behavior: SnackBarBehavior.floating,
           ),
         );
       } else {
         setState(() {
-          _passwordError = auth.errorMessage ?? _t('Password update failed', 'فشل تحديث كلمة المرور');
+          _passwordError =
+              auth.errorMessage ??
+              _t('Password update failed', 'فشل تحديث كلمة المرور');
         });
       }
     }

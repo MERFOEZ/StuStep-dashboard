@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:html' as html;
+import 'package:cross_file/cross_file.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/course_model.dart';
@@ -726,7 +726,7 @@ class CoursesProvider extends ChangeNotifier {
     required String courseId,
     required String chapterId,
     required String lessonId,
-    required html.File file,
+    required XFile file,
     required String fileType, // 'video' or 'pdf'
   }) async {
     final fileId = '${lessonId}_$fileType';

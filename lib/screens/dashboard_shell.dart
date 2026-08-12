@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
+import '../main.dart' show testDashboardConnection;
 import 'pages/overview_page.dart';
 import 'pages/users_page.dart';
 import 'pages/groups_page.dart';
@@ -18,6 +19,14 @@ class DashboardShell extends StatefulWidget {
 class _DashboardShellState extends State<DashboardShell> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   int _selectedIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    // Run Database Health Check after authentication
+    testDashboardConnection();
+  }
+
 
   final List<Widget> _pages = [
     const OverviewPage(),
