@@ -1,21 +1,22 @@
 import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
+import 'package:flutter/foundation.dart' show kIsWeb;
 
-/// ──────────────────────────────────────────────────────────────────────────────
-/// PLACEHOLDER — Replace with your real Firebase project configuration.
-/// Run `flutterfire configure` to auto-generate this file, or manually paste
-/// the values from the Firebase Console → Project Settings → Web App.
-/// ──────────────────────────────────────────────────────────────────────────────
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
-    return web;
+    if (kIsWeb) {
+      return web;
+    }
+    throw UnsupportedError(
+      'This admin dashboard is only supported on the web platform.',
+    );
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyA-dCwcS4V2cRToHeRwxF8VyOj2Kf7SOpo',
-    appId: '1:165136018294:web:8ac381ea15356143fc6857',
-    messagingSenderId: '165136018294',
-    projectId: 'stustep-4c1ea',
-    authDomain: 'stustep-4c1ea.firebaseapp.com',
-    storageBucket: 'stustep-4c1ea.firebasestorage.app',
+    apiKey: 'AIzaSyDrWrVmpE2odhHON3TC9CovgewzpF3nXys',
+    appId: '1:611121520187:web:29098cb4172942f633c61e',
+    messagingSenderId: '611121520187',
+    projectId: 'stustep-app-99',
+    authDomain: 'stustep-app-99.firebaseapp.com',
+    storageBucket: 'stustep-app-99.firebasestorage.app',
   );
 }

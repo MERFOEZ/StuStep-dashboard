@@ -1,81 +1,83 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:dashboard/firebase_options.dart';
-import 'package:dashboard/core/theme/app_theme.dart';
-import 'package:dashboard/core/l10n/app_localizations.dart';
-import 'package:dashboard/core/providers/locale_provider.dart';
-import 'package:dashboard/core/router/app_router.dart';
-
-/// LocaleProviderScope — InheritedWidget so any descendant can access
-/// the locale provider without a DI package.
-class LocaleProviderScope extends InheritedNotifier<LocaleProvider> {
-  const LocaleProviderScope({
-    super.key,
-    required LocaleProvider provider,
-    required super.child,
-  }) : super(notifier: provider);
-
-  static LocaleProvider of(BuildContext context) {
-    return context
-        .dependOnInheritedWidgetOfExactType<LocaleProviderScope>()!
-        .notifier!;
-  }
-}
+import 'package:provider/provider.dart';
+import 'firebase_options.dart';
+import 'core/theme/admin_theme.dart';
+import 'providers/auth_provider.dart';
+import 'providers/users_provider.dart';
+import 'providers/categories_provider.dart';
+import 'providers/courses_provider.dart';
+import 'providers/groups_provider.dart';
+import 'providers/ai_provider.dart';
+import 'providers/settings_provider.dart';
+import 'screens/login/login_screen.dart';
+import 'screens/dashboard_shell.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const StuStepApp());
+  runApp(const StuStepAdmin());
 }
 
-class StuStepApp extends StatefulWidget {
-  const StuStepApp({super.key});
-
-  @override
-  State<StuStepApp> createState() => _StuStepAppState();
-}
-
-class _StuStepAppState extends State<StuStepApp> {
-  final _localeProvider = LocaleProvider();
-
-  @override
-  void dispose() {
-    _localeProvider.dispose();
-    super.dispose();
-  }
+class StuStepAdmin extends StatelessWidget {
+  const StuStepAdmin({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return ListenableBuilder(
-      listenable: _localeProvider,
-      builder: (context, _) {
-        final isArabic = _localeProvider.isArabic;
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => UsersProvider()),
+        ChangeNotifierProvider(create: (_) => CategoriesProvider()),
+        ChangeNotifierProvider(create: (_) => CoursesProvider()),
+        ChangeNotifierProvider(create: (_) => GroupsProvider()),
+        ChangeNotifierProvider(create: (_) => AIProvider()),
+        ChangeNotifierProvider(create: (_) => SettingsProvider()),
+      ],
+      child: MaterialApp(
+        title: 'StuStep Admin',
+        debugShowCheckedModeBanner: false,
+        theme: AdminTheme.darkTheme,
+        home: Consumer<AuthProvider>(
+          builder: (context, auth, _) {
+            // Show loading while checking auth state
+            if (auth.isLoading) {
+              return const _SplashScreen();
+            }
+            // Route based on login status
+            if (auth.isLoggedIn) {
+              return const DashboardShell();
+            }
+            return const LoginScreen();
+          },
+        ),
+      ),
+    );
+  }
+}
 
-        return LocaleProviderScope(
-          provider: _localeProvider,
-          child: MaterialApp.router(
-            title: 'StuStep Dashboard',
-            debugShowCheckedModeBanner: false,
-            theme: AppTheme.buildTheme(isArabic: isArabic),
+/// Minimal splash shown while Firebase Auth initializes.
+class _SplashScreen extends StatelessWidget {
+  const _SplashScreen();
 
-            // ─── Locale ──────────────────────────────────────────────
-            locale: _localeProvider.locale,
-            supportedLocales: const [Locale('ar'), Locale('en')],
-            localizationsDelegates: const [
-              S.delegate,
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-            ],
-
-            // ─── Router ──────────────────────────────────────────────
-            routerConfig: appRouter,
-          ),
-        );
-      },
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircularProgressIndicator(strokeWidth: 3),
+            SizedBox(height: 20),
+            Text(
+              'جارٍ التحميل...',
+              style: TextStyle(fontSize: 14, color: Colors.white54),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

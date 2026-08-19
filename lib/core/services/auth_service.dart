@@ -1,103 +1,42 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:dashboard/core/models/app_user.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import '../constants/firestore_paths.dart';
 
-/// Wraps FirebaseAuth and Firestore role-check logic.
-///
-/// Follows the RBAC pattern: authenticate → check role → allow/deny.
-/// Fails closed on any error (signs the user out).
+/// Handles admin authentication and role verification.
 class AuthService {
-  final FirebaseAuth _auth;
-  final FirebaseFirestore _firestore;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  AuthService({
-    FirebaseAuth? auth,
-    FirebaseFirestore? firestore,
-  })  : _auth = auth ?? FirebaseAuth.instance,
-        _firestore = firestore ?? FirebaseFirestore.instance;
+  static final AuthService _instance = AuthService._internal();
+  factory AuthService() => _instance;
+  AuthService._internal();
 
-  /// Current auth state stream.
+  User? get currentUser => _auth.currentUser;
   Stream<User?> get authStateChanges => _auth.authStateChanges();
 
-  /// Current user (nullable).
-  User? get currentUser => _auth.currentUser;
-
-  /// Sign in with email & password.
-  /// Returns the [UserCredential] on success.
-  /// Throws a user-friendly [String] message on failure.
-  Future<UserCredential> signIn(String email, String password) async {
-    try {
-      return await _auth.signInWithEmailAndPassword(
-        email: email.trim(),
-        password: password,
-      );
-    } on FirebaseAuthException catch (e) {
-      print('=== FIREBASE_AUTH_ERROR_CODE: ${e.code} ===');
-      print('=== FIREBASE_AUTH_ERROR_MESSAGE: ${e.message} ===');
-      print('FIREBASE ERROR: ${e.code} - ${e.message}');
-      throw _mapAuthException(e.code);
-    } catch (e) {
-      print('FIREBASE ERROR: UNKNOWN - $e');
-      throw 'An unexpected error occurred. Please try again.';
-    }
+  /// Sign in with email and password.
+  Future<User?> signIn({
+    required String email,
+    required String password,
+  }) async {
+    final credential = await _auth.signInWithEmailAndPassword(
+      email: email.trim(),
+      password: password,
+    );
+    return credential.user;
   }
 
-  /// Sign out the current user.
+  /// Check if the given UID has admin role in Firestore.
+  Future<bool> isAdmin(String uid) async {
+    final doc =
+        await _firestore.collection(FirestorePaths.users).doc(uid).get();
+    if (!doc.exists) return false;
+    final data = doc.data();
+    return data?['role'] == 'admin';
+  }
+
+  /// Sign out.
   Future<void> signOut() async {
     await _auth.signOut();
-  }
-
-  /// Check the user's role in Firestore `users/{uid}`.
-  /// Returns an [AppUser] if the document exists.
-  /// Defaults missing `role` to `'student'` (least privilege).
-  Future<AppUser> checkUserRole(String uid) async {
-    try {
-      print('=== FIRESTORE_CHECK: Fetching document for UID: $uid ===');
-      final doc = await _firestore.collection('users').doc(uid).get();
-
-      if (!doc.exists || doc.data() == null) {
-        print('=== FIRESTORE_ERROR: User document missing or empty for UID: $uid ===');
-        // No document → least privilege → will be denied by caller.
-        return AppUser(
-          uid: uid,
-          email: _auth.currentUser?.email ?? '',
-          name: '',
-          role: 'student',
-        );
-      }
-
-      return AppUser.fromFirestore(uid, doc.data()!);
-    } catch (e) {
-      print('=== FIRESTORE_EXCEPTION: Failed to check user role for UID: $uid - $e ===');
-      print('FIREBASE ERROR: Failed to check user role - $e');
-      // Fail closed: return non-admin so caller will sign out.
-      return AppUser(
-        uid: uid,
-        email: _auth.currentUser?.email ?? '',
-        name: '',
-        role: 'student',
-      );
-    }
-  }
-
-  /// Maps FirebaseAuth error codes to user-friendly messages.
-  String _mapAuthException(String code) {
-    switch (code) {
-      case 'user-not-found':
-        return 'No account found with this email address.';
-      case 'wrong-password':
-      case 'invalid-credential':
-        return 'Incorrect password. Please try again.';
-      case 'too-many-requests':
-        return 'Too many attempts. Please wait a moment.';
-      case 'network-request-failed':
-        return 'Network error. Please check your connection.';
-      case 'user-disabled':
-        return 'This account has been disabled.';
-      case 'invalid-email':
-        return 'Invalid email address format.';
-      default:
-        return 'Authentication failed. Please try again.';
-    }
   }
 }

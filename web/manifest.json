@@ -1,6 +1,6 @@
 {
-    "name": "dashboard",
-    "short_name": "dashboard",
+    "name": "stustep_admin",
+    "short_name": "stustep_admin",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
