@@ -12,7 +12,6 @@ class OverviewScreen extends StatefulWidget {
 
 class _OverviewScreenState extends State<OverviewScreen> {
   int _usersCount = 0;
-  int _coursesCount = 0;
   int _groupsCount = 0;
   int _aiTodayCount = 0;
   bool _isLoading = true;
@@ -29,7 +28,6 @@ class _OverviewScreenState extends State<OverviewScreen> {
     try {
       final results = await Future.wait([
         firestore.collection(FirestorePaths.users).count().get(),
-        firestore.collection(FirestorePaths.courses).count().get(),
         firestore.collection(FirestorePaths.groups).count().get(),
         _getTodayAICount(firestore),
       ]);
@@ -37,9 +35,8 @@ class _OverviewScreenState extends State<OverviewScreen> {
       if (mounted) {
         setState(() {
           _usersCount = (results[0] as AggregateQuerySnapshot).count ?? 0;
-          _coursesCount = (results[1] as AggregateQuerySnapshot).count ?? 0;
-          _groupsCount = (results[2] as AggregateQuerySnapshot).count ?? 0;
-          _aiTodayCount = results[3] as int;
+          _groupsCount = (results[1] as AggregateQuerySnapshot).count ?? 0;
+          _aiTodayCount = results[2] as int;
           _isLoading = false;
         });
       }
@@ -85,13 +82,6 @@ class _OverviewScreenState extends State<OverviewScreen> {
                       label: 'إجمالي المستخدمين',
                       value: '$_usersCount',
                       color: AppColors.primary,
-                    ),
-                    const SizedBox(width: 20),
-                    _buildStatCard(
-                      icon: Icons.play_circle_rounded,
-                      label: 'الكورسات',
-                      value: '$_coursesCount',
-                      color: AppColors.success,
                     ),
                     const SizedBox(width: 20),
                     _buildStatCard(

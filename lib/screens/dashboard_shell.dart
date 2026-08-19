@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../providers/auth_provider.dart';
 import '../core/constants/app_colors.dart';
-import 'login/login_screen.dart';
 import 'overview/overview_screen.dart';
 import 'users/users_screen.dart';
-import 'courses/courses_screen.dart';
-import 'categories/categories_screen.dart';
 import 'groups/groups_screen.dart';
 import 'ai/ai_conversations_screen.dart';
 import 'settings/settings_screen.dart';
@@ -25,8 +21,6 @@ class _DashboardShellState extends State<DashboardShell> {
   static const List<_NavItem> _navItems = [
     _NavItem(icon: Icons.dashboard_rounded, label: 'نظرة عامة'),
     _NavItem(icon: Icons.people_rounded, label: 'المستخدمين'),
-    _NavItem(icon: Icons.play_circle_rounded, label: 'الكورسات'),
-    _NavItem(icon: Icons.category_rounded, label: 'الفئات'),
     _NavItem(icon: Icons.chat_rounded, label: 'المجموعات'),
     _NavItem(icon: Icons.smart_toy_rounded, label: 'محادثات AI'),
     _NavItem(icon: Icons.settings_rounded, label: 'الإعدادات'),
@@ -39,14 +33,10 @@ class _DashboardShellState extends State<DashboardShell> {
       case 1:
         return const UsersScreen();
       case 2:
-        return const CoursesScreen();
-      case 3:
-        return const CategoriesScreen();
-      case 4:
         return const GroupsScreen();
-      case 5:
+      case 3:
         return const AIConversationsScreen();
-      case 6:
+      case 4:
         return const SettingsScreen();
       default:
         return const OverviewScreen();
@@ -55,8 +45,6 @@ class _DashboardShellState extends State<DashboardShell> {
 
   @override
   Widget build(BuildContext context) {
-    final authProvider = context.watch<AuthProvider>();
-
     return Scaffold(
       backgroundColor: AppColors.background,
       body: Row(
@@ -65,16 +53,7 @@ class _DashboardShellState extends State<DashboardShell> {
           _Sidebar(
             selectedIndex: _selectedIndex,
             items: _navItems,
-            adminName: authProvider.displayName,
             onItemTap: (i) => setState(() => _selectedIndex = i),
-            onLogout: () async {
-              await authProvider.logout();
-              if (context.mounted) {
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (_) => const LoginScreen()),
-                );
-              }
-            },
           ),
 
           // ── Content ──
@@ -153,16 +132,12 @@ class _DashboardShellState extends State<DashboardShell> {
 class _Sidebar extends StatelessWidget {
   final int selectedIndex;
   final List<_NavItem> items;
-  final String adminName;
   final ValueChanged<int> onItemTap;
-  final VoidCallback onLogout;
 
   const _Sidebar({
     required this.selectedIndex,
     required this.items,
-    required this.adminName,
     required this.onItemTap,
-    required this.onLogout,
   });
 
   @override
@@ -296,7 +271,7 @@ class _Sidebar extends StatelessWidget {
             ),
           ),
 
-          // ── Admin Profile + Logout ──
+          // ── Admin Profile ──
           Container(
             padding: const EdgeInsets.all(16),
             decoration: const BoxDecoration(
@@ -304,75 +279,43 @@ class _Sidebar extends StatelessWidget {
                 top: BorderSide(color: AppColors.border),
               ),
             ),
-            child: Column(
+            child: Row(
               children: [
-                Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 18,
-                      backgroundColor: AppColors.primary,
-                      child: Text(
-                        adminName.isNotEmpty ? adminName[0].toUpperCase() : 'A',
+                CircleAvatar(
+                  radius: 18,
+                  backgroundColor: AppColors.primary,
+                  child: Text(
+                    'A',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Admin',
                         style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
+                          color: AppColors.textPrimary,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const Text(
+                        'مدير عام',
+                        style: TextStyle(
+                          color: AppColors.textMuted,
+                          fontSize: 11,
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            adminName,
-                            style: const TextStyle(
-                              color: AppColors.textPrimary,
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          const Text(
-                            'مدير عام',
-                            style: TextStyle(
-                              color: AppColors.textMuted,
-                              fontSize: 11,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                SizedBox(
-                  width: double.infinity,
-                  child: OutlinedButton.icon(
-                    onPressed: onLogout,
-                    icon: const Icon(
-                      Icons.logout_rounded,
-                      size: 16,
-                      color: AppColors.error,
-                    ),
-                    label: const Text(
-                      'تسجيل الخروج',
-                      style: TextStyle(
-                        color: AppColors.error,
-                        fontSize: 12,
-                      ),
-                    ),
-                    style: OutlinedButton.styleFrom(
-                      side: BorderSide(
-                        color: AppColors.error.withValues(alpha: 0.3),
-                      ),
-                      padding: const EdgeInsets.symmetric(vertical: 10),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
+                    ],
                   ),
                 ),
               ],

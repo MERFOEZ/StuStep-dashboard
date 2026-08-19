@@ -3,14 +3,10 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import 'core/theme/admin_theme.dart';
-import 'providers/auth_provider.dart';
 import 'providers/users_provider.dart';
-import 'providers/categories_provider.dart';
-import 'providers/courses_provider.dart';
 import 'providers/groups_provider.dart';
 import 'providers/ai_provider.dart';
 import 'providers/settings_provider.dart';
-import 'screens/login/login_screen.dart';
 import 'screens/dashboard_shell.dart';
 
 void main() async {
@@ -28,10 +24,7 @@ class StuStepAdmin extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => UsersProvider()),
-        ChangeNotifierProvider(create: (_) => CategoriesProvider()),
-        ChangeNotifierProvider(create: (_) => CoursesProvider()),
         ChangeNotifierProvider(create: (_) => GroupsProvider()),
         ChangeNotifierProvider(create: (_) => AIProvider()),
         ChangeNotifierProvider(create: (_) => SettingsProvider()),
@@ -40,19 +33,7 @@ class StuStepAdmin extends StatelessWidget {
         title: 'StuStep Admin',
         debugShowCheckedModeBanner: false,
         theme: AdminTheme.darkTheme,
-        home: Consumer<AuthProvider>(
-          builder: (context, auth, _) {
-            // Show loading while checking auth state
-            if (auth.isLoading) {
-              return const _SplashScreen();
-            }
-            // Route based on login status
-            if (auth.isLoggedIn) {
-              return const DashboardShell();
-            }
-            return const LoginScreen();
-          },
-        ),
+        home: const DashboardShell(), // Temporarily bypass login
       ),
     );
   }
