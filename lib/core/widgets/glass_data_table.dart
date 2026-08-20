@@ -1,10 +1,13 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:dashboard/core/theme/app_theme.dart';
 
-/// Premium glass data table with hover effects, animated rows, and
-/// status badges.
+/// ─────────────────────────────────────────────────────────────────────────────
+/// Premium Light-Mode Data Table — Card-Based Architecture
+/// ─────────────────────────────────────────────────────────────────────────────
+/// Destroys the default DataTable. Each row is a breathable white card with
+/// hover micro-interactions (2% scale + shadow expansion), staggered entry
+/// animations, and gradient accent details. Zero default Material components.
 class GlassDataTable extends StatelessWidget {
   final List<String> columns;
   final List<GlassTableRow> rows;
@@ -19,75 +22,95 @@ class GlassDataTable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(16),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-        child: Container(
-          decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.05),
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: AppColors.glassBorder.withValues(alpha: 0.2),
-            ),
-          ),
-          child: Column(
-            children: [
-              // Header
-              Container(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 20, vertical: 14),
-                decoration: BoxDecoration(
-                  color: AppColors.surface3.withValues(alpha: 0.5),
-                  border: Border(
-                    bottom: BorderSide(
-                      color: AppColors.glassBorder.withValues(alpha: 0.2),
-                    ),
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(
+          color: AppColors.border.withOpacity(0.3),
+        ),
+        boxShadow: AppColors.softShadow,
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(22),
+        child: Column(
+          children: [
+            // ─── Header Row ──────────────────────────────────────
+            Container(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 28, vertical: 18),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    AppColors.surfaceTinted,
+                    AppColors.surfaceTinted.withOpacity(0.6),
+                  ],
+                ),
+                border: Border(
+                  bottom: BorderSide(
+                    color: AppColors.border.withOpacity(0.4),
                   ),
                 ),
-                child: Row(
-                  children: columns.map((col) {
-                    return Expanded(
-                      child: Text(
-                        col,
-                        style: TextStyle(
-                          color: AppColors.textHint,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          letterSpacing: 0.5,
-                        ),
-                      ),
-                    );
-                  }).toList(),
-                ),
               ),
-              // Rows
-              ...rows.asMap().entries.map((entry) {
-                final index = entry.key;
-                final row = entry.value;
-                return _AnimatedTableRow(
-                  row: row,
-                  index: index,
-                  columnCount: columns.length,
-                );
-              }),
-            ],
-          ),
+              child: Row(
+                children: columns.asMap().entries.map((entry) {
+                  final index = entry.key;
+                  final col = entry.value;
+                  return Expanded(
+                    child: Text(
+                      col.toUpperCase(),
+                      style: TextStyle(
+                        color: AppColors.textSecondary,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 0.8,
+                      ),
+                    )
+                        .animate()
+                        .fadeIn(
+                          duration: 350.ms,
+                          delay: Duration(milliseconds: 30 * index),
+                        )
+                        .slideY(
+                          begin: -0.15,
+                          duration: 350.ms,
+                          delay: Duration(milliseconds: 30 * index),
+                          curve: Curves.easeOutCubic,
+                        ),
+                  );
+                }).toList(),
+              ),
+            ),
+            // ─── Data Rows — each with staggered animation ──────
+            ...rows.asMap().entries.map((entry) {
+              final index = entry.key;
+              final row = entry.value;
+              return _AnimatedTableRow(
+                row: row,
+                index: index,
+                columnCount: columns.length,
+                isLast: index == rows.length - 1,
+              );
+            }),
+          ],
         ),
       ),
     );
   }
 }
 
+/// A single animated data row with hover micro-interactions.
 class _AnimatedTableRow extends StatefulWidget {
   final GlassTableRow row;
   final int index;
   final int columnCount;
+  final bool isLast;
 
   const _AnimatedTableRow({
     required this.row,
     required this.index,
     required this.columnCount,
+    this.isLast = false,
   });
 
   @override
@@ -103,17 +126,23 @@ class _AnimatedTableRowState extends State<_AnimatedTableRow> {
       onEnter: (_) => setState(() => _hovered = true),
       onExit: (_) => setState(() => _hovered = false),
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+        duration: const Duration(milliseconds: 220),
+        curve: Curves.easeOutCubic,
+        padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 18),
+        transform: Matrix4.identity()..scale(_hovered ? 1.005 : 1.0),
+        transformAlignment: Alignment.center,
         decoration: BoxDecoration(
           color: _hovered
-              ? AppColors.primary.withValues(alpha: 0.05)
+              ? AppColors.primary.withOpacity(0.025)
               : Colors.transparent,
-          border: Border(
-            bottom: BorderSide(
-              color: AppColors.glassBorder.withValues(alpha: 0.1),
-            ),
-          ),
+          border: widget.isLast
+              ? null
+              : Border(
+                  bottom: BorderSide(
+                    color: AppColors.border
+                        .withOpacity(_hovered ? 0.15 : 0.25),
+                  ),
+                ),
         ),
         child: Row(
           children: widget.row.cells.map((cell) {
@@ -126,9 +155,10 @@ class _AnimatedTableRowState extends State<_AnimatedTableRow> {
         .fade(
           duration: 400.ms,
           delay: Duration(milliseconds: 50 * widget.index),
+          curve: Curves.easeOutCubic,
         )
-        .slideX(
-          begin: 0.02,
+        .slideY(
+          begin: 0.06,
           duration: 400.ms,
           delay: Duration(milliseconds: 50 * widget.index),
           curve: Curves.easeOutCubic,
@@ -144,7 +174,9 @@ class GlassTableRow {
   const GlassTableRow({required this.cells, this.id});
 }
 
-/// Status badge widget for active/inactive states.
+/// ─────────────────────────────────────────────────────────────────────────────
+/// Status Badge — Vibrant pill with glow indicator
+/// ─────────────────────────────────────────────────────────────────────────────
 class StatusBadge extends StatelessWidget {
   final bool isActive;
   final String activeLabel;
@@ -159,42 +191,44 @@ class StatusBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = isActive ? AppColors.success : AppColors.textMuted;
+    final color = isActive ? AppColors.success : AppColors.textHint;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
-        color: color.withValues(alpha: 0.12),
+        color: color.withOpacity(0.08),
         border: Border.all(
-          color: color.withValues(alpha: 0.3),
+          color: color.withOpacity(0.2),
         ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
+          // Pulsing status dot
           Container(
-            width: 6,
-            height: 6,
+            width: 7,
+            height: 7,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: color,
               boxShadow: isActive
                   ? [
                       BoxShadow(
-                        color: color.withValues(alpha: 0.6),
-                        blurRadius: 6,
+                        color: color.withOpacity(0.5),
+                        blurRadius: 8,
                       ),
                     ]
                   : null,
             ),
           ),
-          const SizedBox(width: 6),
+          const SizedBox(width: 7),
           Text(
             isActive ? activeLabel : inactiveLabel,
             style: TextStyle(
               color: color,
               fontSize: 11,
               fontWeight: FontWeight.w600,
+              letterSpacing: 0.2,
             ),
           ),
         ],
@@ -203,7 +237,9 @@ class StatusBadge extends StatelessWidget {
   }
 }
 
-/// Action buttons for table rows.
+/// ─────────────────────────────────────────────────────────────────────────────
+/// Table Action Buttons — Animated icon set with hover effects
+/// ─────────────────────────────────────────────────────────────────────────────
 class TableActionButtons extends StatelessWidget {
   final VoidCallback onEdit;
   final VoidCallback onDelete;
@@ -238,7 +274,7 @@ class TableActionButtons extends StatelessWidget {
             color: AppColors.secondary,
             onPressed: onView!,
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: 6),
         ],
         if (onAddVideo != null) ...[
           _ActionIcon(
@@ -247,7 +283,7 @@ class TableActionButtons extends StatelessWidget {
             color: AppColors.primary,
             onPressed: onAddVideo!,
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: 6),
         ],
         _ActionIcon(
           icon: Icons.edit_rounded,
@@ -255,7 +291,7 @@ class TableActionButtons extends StatelessWidget {
           color: AppColors.info,
           onPressed: onEdit,
         ),
-        const SizedBox(width: 8),
+        const SizedBox(width: 6),
         _ActionIcon(
           icon: Icons.delete_outline_rounded,
           tooltip: deleteTooltip,
@@ -299,19 +335,34 @@ class _ActionIconState extends State<_ActionIcon> {
           onTap: widget.onPressed,
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 200),
-            width: 32,
-            height: 32,
+            width: 36,
+            height: 36,
+            transform: Matrix4.identity()
+              ..scale(_hovered ? 1.12 : 1.0),
+            transformAlignment: Alignment.center,
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(10),
               color: _hovered
-                  ? widget.color.withValues(alpha: 0.15)
+                  ? widget.color.withOpacity(0.1)
                   : Colors.transparent,
+              border: _hovered
+                  ? Border.all(
+                      color: widget.color.withOpacity(0.2),
+                    )
+                  : null,
+              boxShadow: _hovered
+                  ? [
+                      BoxShadow(
+                        color: widget.color.withOpacity(0.12),
+                        blurRadius: 12,
+                        spreadRadius: -4,
+                      ),
+                    ]
+                  : null,
             ),
             child: Icon(
               widget.icon,
-              color: _hovered
-                  ? widget.color
-                  : AppColors.textHint,
+              color: _hovered ? widget.color : AppColors.textHint,
               size: 18,
             ),
           ),

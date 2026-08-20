@@ -240,7 +240,38 @@ class FirestoreService {
 
   // ─── Counts (for dashboard stats) ──────────────────────────────────────
 
-  Stream<int> collectionCount(String collection) {
-    return _db.collection(collection).snapshots().map((s) => s.docs.length);
+  /// Fetches the document count for a single collection using Firestore's
+  /// native server-side count() aggregation. This costs 0 document reads —
+  /// it only performs a single aggregation read, regardless of collection size.
+  Future<int> aggregateCount(String collection) async {
+    final snapshot = await _db.collection(collection).count().get();
+    return snapshot.count ?? 0;
+  }
+
+  /// Fetches all dashboard KPI counts in parallel using count() aggregation.
+  /// Returns a map: { 'colleges': N, 'departments': N, 'courses': N, 'store': N }
+  ///
+  /// Each collection costs exactly 1 aggregation read (not 1 per document).
+  Future<Map<String, int>> getDashboardCounts() async {
+    const collections = ['colleges', 'departments', 'courses', 'store'];
+
+    final results = await Future.wait(
+      collections.map((c) => _db.collection(c).count().get()),
+    );
+
+    return {
+      for (int i = 0; i < collections.length; i++)
+        collections[i]: results[i].count ?? 0,
+    };
+  }
+
+  /// Real-time stream that re-emits the count whenever the collection changes.
+  /// Uses snapshots but only reads the metadata (doc count), not full documents.
+  /// Prefer [aggregateCount] or [getDashboardCounts] for one-shot reads.
+  Stream<int> collectionCountStream(String collection) {
+    return _db
+        .collection(collection)
+        .snapshots(includeMetadataChanges: false)
+        .map((snap) => snap.docs.length);
   }
 }

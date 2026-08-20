@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:dashboard/core/theme/app_theme.dart';
 
-/// Shimmer loading placeholder with animated gradient sweep.
+/// Shimmer loading placeholder — light mode with soft gray gradient sweep.
 class ShimmerLoading extends StatefulWidget {
   final double width;
   final double height;
@@ -11,7 +10,7 @@ class ShimmerLoading extends StatefulWidget {
     super.key,
     this.width = double.infinity,
     this.height = 48,
-    this.borderRadius = 12,
+    this.borderRadius = 14,
   });
 
   @override
@@ -50,10 +49,10 @@ class _ShimmerLoadingState extends State<ShimmerLoading>
             gradient: LinearGradient(
               begin: Alignment(-1.0 + 2.0 * _ctrl.value, 0),
               end: Alignment(-1.0 + 2.0 * _ctrl.value + 1.0, 0),
-              colors: [
-                AppColors.surface2,
-                AppColors.surface3.withValues(alpha: 0.8),
-                AppColors.surface2,
+              colors: const [
+                Color(0xFFE8ECF0),
+                Color(0xFFF4F7FA),
+                Color(0xFFE8ECF0),
               ],
               stops: const [0.0, 0.5, 1.0],
             ),

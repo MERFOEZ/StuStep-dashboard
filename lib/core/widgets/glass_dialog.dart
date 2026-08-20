@@ -2,7 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:dashboard/core/theme/app_theme.dart';
 
-/// Shows a premium glass dialog with slide-up animation.
+/// Shows a premium light-mode dialog with slide-up animation and soft shadows.
 Future<T?> showGlassDialog<T>({
   required BuildContext context,
   required String title,
@@ -14,7 +14,7 @@ Future<T?> showGlassDialog<T>({
     context: context,
     barrierDismissible: true,
     barrierLabel: 'Dismiss',
-    barrierColor: Colors.black.withValues(alpha: 0.5),
+    barrierColor: Colors.black.withOpacity(0.25),
     transitionDuration: const Duration(milliseconds: 350),
     pageBuilder: (context, animation, secondaryAnimation) {
       return Center(
@@ -40,11 +40,11 @@ Future<T?> showGlassDialog<T>({
         opacity: curve,
         child: SlideTransition(
           position: Tween<Offset>(
-            begin: const Offset(0, 0.08),
+            begin: const Offset(0, 0.06),
             end: Offset.zero,
           ).animate(curve),
           child: ScaleTransition(
-            scale: Tween<double>(begin: 0.95, end: 1.0).animate(curve),
+            scale: Tween<double>(begin: 0.96, end: 1.0).animate(curve),
             child: child,
           ),
         ),
@@ -66,106 +66,111 @@ class _GlassDialogContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(20),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 24, sigmaY: 24),
-        child: Container(
-          padding: const EdgeInsets.all(28),
-          decoration: BoxDecoration(
-            color: AppColors.surface2.withValues(alpha: 0.95),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: AppColors.glassBorder.withValues(alpha: 0.3),
-              width: 1,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.primary.withValues(alpha: 0.1),
-                blurRadius: 40,
-                spreadRadius: -8,
-              ),
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.3),
-                blurRadius: 60,
-                spreadRadius: -12,
-              ),
-            ],
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Title row
-              Row(
-                children: [
-                  Container(
-                    width: 4,
-                    height: 24,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(2),
-                      gradient: const LinearGradient(
-                        colors: [AppColors.primary, AppColors.secondary],
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      title,
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.w700,
-                          ),
-                    ),
-                  ),
-                  // Close button
-                  MouseRegion(
-                    cursor: SystemMouseCursors.click,
-                    child: GestureDetector(
-                      onTap: () => Navigator.of(context).pop(),
-                      child: Container(
-                        width: 32,
-                        height: 32,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          color: AppColors.glassFill,
-                        ),
-                        child: Icon(
-                          Icons.close_rounded,
-                          color: AppColors.textHint,
-                          size: 18,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
-              // Content
-              content,
-              if (actions != null && actions!.isNotEmpty) ...[
-                const SizedBox(height: 24),
-                Divider(color: AppColors.glassBorder.withValues(alpha: 0.2)),
-                const SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: actions!
-                      .expand((w) => [w, const SizedBox(width: 12)])
-                      .toList()
-                    ..removeLast(),
-                ),
-              ],
-            ],
-          ),
+    return Container(
+      padding: const EdgeInsets.all(28),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: AppColors.border.withOpacity(0.3),
+          width: 1,
         ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 48,
+            spreadRadius: -8,
+            offset: const Offset(0, 20),
+          ),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 20,
+            spreadRadius: -4,
+            offset: const Offset(0, 8),
+          ),
+          BoxShadow(
+            color: AppColors.primary.withOpacity(0.05),
+            blurRadius: 60,
+            spreadRadius: -12,
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Title row
+          Row(
+            children: [
+              Container(
+                width: 4,
+                height: 24,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(2),
+                  gradient: const LinearGradient(
+                    colors: AppColors.gradientPrimary,
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  title,
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.textPrimary,
+                      ),
+                ),
+              ),
+              // Close button
+              MouseRegion(
+                cursor: SystemMouseCursors.click,
+                child: GestureDetector(
+                  onTap: () => Navigator.of(context).pop(),
+                  child: Container(
+                    width: 34,
+                    height: 34,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: AppColors.surfaceTinted,
+                      border: Border.all(
+                        color: AppColors.border.withOpacity(0.3),
+                      ),
+                    ),
+                    child: Icon(
+                      Icons.close_rounded,
+                      color: AppColors.textHint,
+                      size: 18,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+          // Content
+          content,
+          if (actions != null && actions!.isNotEmpty) ...[
+            const SizedBox(height: 24),
+            Divider(color: AppColors.border.withOpacity(0.4)),
+            const SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: actions!
+                  .expand((w) => [w, const SizedBox(width: 12)])
+                  .toList()
+                ..removeLast(),
+            ),
+          ],
+        ],
       ),
     );
   }
 }
 
-/// Gradient primary button for dialogs.
+/// Gradient primary button for dialogs — light mode.
 class GlassDialogButton extends StatefulWidget {
   final String label;
   final VoidCallback? onPressed;
@@ -203,32 +208,30 @@ class _GlassDialogButtonState extends State<GlassDialogButton> {
         onTap: widget.onPressed,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 11),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(12),
             gradient: widget.isPrimary
                 ? LinearGradient(
                     colors: widget.isDestructive
                         ? [AppColors.error, AppColors.neonPink]
-                        : [AppColors.primary, AppColors.blob2],
+                        : AppColors.gradientPrimary,
                   )
                 : null,
-            color: widget.isPrimary ? null : (_hovered ? AppColors.glassFill : Colors.transparent),
+            color: widget.isPrimary
+                ? null
+                : (_hovered
+                    ? AppColors.surfaceTinted
+                    : Colors.transparent),
             border: widget.isPrimary
                 ? null
                 : Border.all(
                     color: _hovered
-                        ? AppColors.textSecondary
-                        : AppColors.glassBorder,
+                        ? AppColors.textSecondary.withOpacity(0.3)
+                        : AppColors.border,
                   ),
             boxShadow: widget.isPrimary && _hovered
-                ? [
-                    BoxShadow(
-                      color: baseColor.withValues(alpha: 0.3),
-                      blurRadius: 16,
-                      spreadRadius: -4,
-                    ),
-                  ]
+                ? AppColors.gradientGlow(baseColor, hovered: true)
                 : null,
           ),
           child: widget.isLoading
@@ -237,7 +240,9 @@ class _GlassDialogButtonState extends State<GlassDialogButton> {
                   height: 18,
                   child: CircularProgressIndicator(
                     strokeWidth: 2,
-                    color: Colors.white,
+                    color: widget.isPrimary
+                        ? Colors.white
+                        : AppColors.primary,
                   ),
                 )
               : Text(
@@ -256,7 +261,7 @@ class _GlassDialogButtonState extends State<GlassDialogButton> {
   }
 }
 
-/// Delete confirmation dialog with warning design.
+/// Delete confirmation dialog with warning design — light mode.
 Future<bool?> showDeleteConfirmation({
   required BuildContext context,
   required String title,
@@ -276,9 +281,9 @@ Future<bool?> showDeleteConfirmation({
           height: 56,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: AppColors.error.withValues(alpha: 0.1),
+            color: AppColors.error.withOpacity(0.08),
             border: Border.all(
-              color: AppColors.error.withValues(alpha: 0.2),
+              color: AppColors.error.withOpacity(0.15),
             ),
           ),
           child: Icon(
@@ -313,7 +318,7 @@ Future<bool?> showDeleteConfirmation({
   );
 }
 
-/// Cascade delete confirmation with a detailed red warning.
+/// Cascade delete confirmation with a detailed red warning — light mode.
 Future<bool?> showCascadeDeleteConfirmation({
   required BuildContext context,
   required String title,
@@ -333,14 +338,9 @@ Future<bool?> showCascadeDeleteConfirmation({
           height: 64,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            gradient: LinearGradient(
-              colors: [
-                AppColors.error.withValues(alpha: 0.2),
-                AppColors.neonPink.withValues(alpha: 0.15),
-              ],
-            ),
+            color: AppColors.error.withOpacity(0.06),
             border: Border.all(
-              color: AppColors.error.withValues(alpha: 0.4),
+              color: AppColors.error.withOpacity(0.2),
               width: 2,
             ),
           ),
@@ -354,17 +354,17 @@ Future<bool?> showCascadeDeleteConfirmation({
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            color: AppColors.error.withValues(alpha: 0.08),
+            borderRadius: BorderRadius.circular(14),
+            color: AppColors.error.withOpacity(0.04),
             border: Border.all(
-              color: AppColors.error.withValues(alpha: 0.2),
+              color: AppColors.error.withOpacity(0.12),
             ),
           ),
           child: Row(
             children: [
               Icon(
                 Icons.info_outline_rounded,
-                color: AppColors.error.withValues(alpha: 0.8),
+                color: AppColors.error.withOpacity(0.7),
                 size: 20,
               ),
               const SizedBox(width: 12),
@@ -372,7 +372,7 @@ Future<bool?> showCascadeDeleteConfirmation({
                 child: Text(
                   warningMessage,
                   style: TextStyle(
-                    color: AppColors.error.withValues(alpha: 0.9),
+                    color: AppColors.error.withOpacity(0.8),
                     fontSize: 13,
                     fontWeight: FontWeight.w500,
                     height: 1.5,

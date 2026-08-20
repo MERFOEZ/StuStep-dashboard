@@ -2,24 +2,27 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:dashboard/core/theme/app_theme.dart';
 
-/// Reusable frosted glass container.
-/// ClipRRect + BackdropFilter(blur:18) + semi-transparent surface + 1px border + soft glow.
+/// ─────────────────────────────────────────────────────────────────────────────
+/// Frosted Glass Panel — Reusable Container
+/// ─────────────────────────────────────────────────────────────────────────────
+/// White surface with subtle blur, multi-layered soft shadows, refined border,
+/// and optional gradient accent on the top edge.
 class GlassPanel extends StatelessWidget {
   final Widget child;
   final EdgeInsetsGeometry? padding;
   final EdgeInsetsGeometry? margin;
   final double borderRadius;
   final double blurAmount;
-  final double opacity;
+  final bool showTopAccent;
 
   const GlassPanel({
     super.key,
     required this.child,
     this.padding,
     this.margin,
-    this.borderRadius = 16,
-    this.blurAmount = 18,
-    this.opacity = 0.1,
+    this.borderRadius = 20,
+    this.blurAmount = 14,
+    this.showTopAccent = false,
   });
 
   @override
@@ -33,21 +36,33 @@ class GlassPanel extends StatelessWidget {
           child: Container(
             padding: padding ?? const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: opacity),
+              color: Colors.white.withOpacity(0.88),
               borderRadius: BorderRadius.circular(borderRadius),
               border: Border.all(
-                color: AppColors.glassBorder,
+                color: AppColors.border.withOpacity(0.4),
                 width: 1,
               ),
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.primary.withValues(alpha: 0.08),
-                  blurRadius: 24,
-                  spreadRadius: -4,
-                ),
-              ],
+              boxShadow: AppColors.softShadow,
             ),
-            child: child,
+            child: showTopAccent
+                ? Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Gradient accent line at the top
+                      Container(
+                        height: 3,
+                        margin: const EdgeInsets.only(bottom: 16),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(2),
+                          gradient: const LinearGradient(
+                            colors: AppColors.gradientPrimary,
+                          ),
+                        ),
+                      ),
+                      Expanded(child: child),
+                    ],
+                  )
+                : child,
           ),
         ),
       ),

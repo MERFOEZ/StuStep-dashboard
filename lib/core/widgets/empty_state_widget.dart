@@ -2,7 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:dashboard/core/theme/app_theme.dart';
 
-/// Empty state widget with animated floating icon and call-to-action.
+/// ─────────────────────────────────────────────────────────────────────────────
+/// Empty State Widget — Premium Floating Icon with Gradient CTA
+/// ─────────────────────────────────────────────────────────────────────────────
+/// Animated floating icon inside gradient-ringed circle, breathable typography,
+/// and a gradient call-to-action button with glow shadow.
 class EmptyStateWidget extends StatelessWidget {
   final IconData icon;
   final String title;
@@ -27,63 +31,90 @@ class EmptyStateWidget extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Floating icon with glow
+            // Floating icon with gradient ring + ambient glow
             Container(
-              width: 80,
-              height: 80,
+              width: 88,
+              height: 88,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: AppColors.primary.withValues(alpha: 0.1),
+                gradient: LinearGradient(
+                  colors: [
+                    AppColors.primary.withOpacity(0.1),
+                    AppColors.secondary.withOpacity(0.08),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
                 border: Border.all(
-                  color: AppColors.primary.withValues(alpha: 0.2),
+                  color: AppColors.primary.withOpacity(0.15),
+                  width: 2,
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.primary.withValues(alpha: 0.15),
-                    blurRadius: 24,
-                    spreadRadius: -4,
+                    color: AppColors.primary.withOpacity(0.1),
+                    blurRadius: 32,
+                    spreadRadius: -8,
+                  ),
+                  BoxShadow(
+                    color: AppColors.secondary.withOpacity(0.06),
+                    blurRadius: 48,
+                    spreadRadius: -12,
                   ),
                 ],
               ),
-              child: Icon(
-                icon,
-                color: AppColors.primaryLight,
-                size: 36,
+              child: ShaderMask(
+                shaderCallback: (bounds) => const LinearGradient(
+                  colors: AppColors.gradientPrimary,
+                ).createShader(bounds),
+                child: Icon(
+                  icon,
+                  color: Colors.white,
+                  size: 38,
+                ),
               ),
             )
                 .animate(onPlay: (c) => c.repeat(reverse: true))
                 .moveY(
                   begin: 0,
-                  end: -8,
-                  duration: 2000.ms,
+                  end: -10,
+                  duration: 2200.ms,
                   curve: Curves.easeInOut,
                 ),
-            const SizedBox(height: 28),
+            const SizedBox(height: 32),
             Text(
               title,
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.w700,
                     color: AppColors.textPrimary,
+                    letterSpacing: -0.3,
                   ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 10),
             Text(
               subtitle,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: AppColors.textHint,
+                    height: 1.5,
                   ),
               textAlign: TextAlign.center,
             ),
             if (actionLabel != null && onAction != null) ...[
-              const SizedBox(height: 24),
+              const SizedBox(height: 28),
               _GradientActionButton(
                 label: actionLabel!,
                 onPressed: onAction!,
               ),
             ],
           ],
-        ),
+        )
+            .animate()
+            .fadeIn(duration: 600.ms, curve: Curves.easeOutCubic)
+            .scale(
+              begin: const Offset(0.95, 0.95),
+              duration: 600.ms,
+              curve: Curves.easeOutCubic,
+            ),
       ),
     );
   }
@@ -114,35 +145,36 @@ class _GradientActionButtonState extends State<_GradientActionButton> {
       child: GestureDetector(
         onTap: widget.onPressed,
         child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          duration: const Duration(milliseconds: 220),
+          padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
+          transform: Matrix4.identity()..scale(_hovered ? 1.04 : 1.0),
+          transformAlignment: Alignment.center,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(14),
             gradient: LinearGradient(
-              colors: [
-                AppColors.primary,
-                _hovered ? AppColors.secondary : AppColors.blob2,
-              ],
+              colors: _hovered
+                  ? AppColors.gradientPrimary
+                      .map((c) => Color.lerp(c, Colors.white, 0.08) ?? c)
+                      .toList()
+                  : AppColors.gradientPrimary,
             ),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.primary.withValues(alpha: _hovered ? 0.4 : 0.2),
-                blurRadius: _hovered ? 20 : 12,
-                spreadRadius: -4,
-              ),
-            ],
+            boxShadow: AppColors.gradientGlow(
+              AppColors.primary,
+              hovered: _hovered,
+            ),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.add_rounded, color: Colors.white, size: 18),
-              const SizedBox(width: 8),
+              Icon(Icons.add_rounded, color: Colors.white, size: 20),
+              const SizedBox(width: 10),
               Text(
                 widget.label,
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
+                  letterSpacing: 0.3,
                 ),
               ),
             ],

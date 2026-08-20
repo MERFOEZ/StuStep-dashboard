@@ -1,21 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:dashboard/core/widgets/glass_sidebar.dart';
 import 'package:dashboard/core/widgets/glass_top_bar.dart';
+import 'package:dashboard/core/widgets/animated_gradient_mesh.dart';
 import 'package:dashboard/core/l10n/app_localizations.dart';
 import 'package:dashboard/main.dart';
 import 'package:dashboard/screens/dashboard/dashboard_home.dart';
 import 'package:dashboard/screens/dashboard/colleges_page.dart';
 import 'package:dashboard/screens/dashboard/departments_page.dart';
 import 'package:dashboard/screens/dashboard/courses_page.dart';
-import 'package:dashboard/screens/dashboard/overview_page.dart';
 import 'package:dashboard/screens/dashboard/users_page.dart';
 import 'package:dashboard/screens/dashboard/groups_page.dart';
 import 'package:dashboard/screens/dashboard/ai_conversations_page.dart';
 import 'package:dashboard/screens/dashboard/settings_page.dart';
 
-enum DashboardView { home, colleges, departments, courses, overview, users, groups, aiChats, settings }
 
-/// Main dashboard shell with sidebar, top bar, and animated page switching.
+enum DashboardView {
+  home,
+  colleges,
+  departments,
+  courses,
+  users,
+  groups,
+  aiChats,
+  settings,
+}
+
+/// ─────────────────────────────────────────────────────────────────────────────
+/// Main Dashboard Shell — Stripe-Tier Vibrant Light Mode
+/// ─────────────────────────────────────────────────────────────────────────────
+/// Living ambient canvas → floating frosted sidebar → frosted top bar →
+/// animated content area with seamless route transitions.
+/// Static rendering is strictly forbidden — every element breathes.
 class DashboardShell extends StatefulWidget {
   final String userName;
   final VoidCallback onSignOut;
@@ -38,7 +53,6 @@ class _DashboardShellState extends State<DashboardShell> {
 
   void _onItemSelected(int index) {
     if (index == -1) {
-      // Sign out
       widget.onSignOut();
       return;
     }
@@ -47,14 +61,20 @@ class _DashboardShellState extends State<DashboardShell> {
       _selectedCollegeId = null;
       _selectedDepartmentId = null;
       switch (index) {
-        case 0: _currentView = DashboardView.home;
-        case 1: _currentView = DashboardView.colleges;
-        case 2: _currentView = DashboardView.overview;
-        case 3: _currentView = DashboardView.users;
-        case 4: _currentView = DashboardView.groups;
-        case 5: _currentView = DashboardView.aiChats;
-        case 6: _currentView = DashboardView.settings;
-        default: _currentView = DashboardView.home;
+        case 0:
+          _currentView = DashboardView.home;
+        case 1:
+          _currentView = DashboardView.colleges;
+        case 2:
+          _currentView = DashboardView.users;
+        case 3:
+          _currentView = DashboardView.groups;
+        case 4:
+          _currentView = DashboardView.aiChats;
+        case 5:
+          _currentView = DashboardView.settings;
+        default:
+          _currentView = DashboardView.home;
       }
     });
   }
@@ -97,8 +117,6 @@ class _DashboardShellState extends State<DashboardShell> {
         return s.departments;
       case DashboardView.courses:
         return s.courses;
-      case DashboardView.overview:
-        return 'نظرة عامة';
       case DashboardView.users:
         return 'المستخدمين';
       case DashboardView.groups:
@@ -135,8 +153,6 @@ class _DashboardShellState extends State<DashboardShell> {
           departmentId: _selectedDepartmentId,
           onBack: _backToDepartments,
         );
-      case DashboardView.overview:
-        return const OverviewPage(key: ValueKey('overview'));
       case DashboardView.users:
         return const UsersPage(key: ValueKey('users'));
       case DashboardView.groups:
@@ -153,52 +169,64 @@ class _DashboardShellState extends State<DashboardShell> {
     final s = S.of(context);
     final localeProvider = LocaleProviderScope.of(context);
 
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: Row(
-        children: [
-          // ─── Sidebar ────────────────────────────────────────────
-          GlassSidebar(
-            selectedIndex: _selectedIndex,
-            onItemSelected: _onItemSelected,
-          ),
-
-          // ─── Main Content ───────────────────────────────────────
-          Expanded(
-            child: Column(
-              children: [
-                // ─── Top Bar ─────────────────────────────────────
-                GlassTopBar(
-                  userName: widget.userName,
-                  pageTitle: _getPageTitle(s),
-                  onToggleLocale: () => localeProvider.toggleLocale(),
-                ),
-
-                // ─── Page Content ────────────────────────────────
-                Expanded(
-                  child: AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 400),
-                    switchInCurve: Curves.easeOutCubic,
-                    switchOutCurve: Curves.easeInCubic,
-                    transitionBuilder: (child, animation) {
-                      return FadeTransition(
-                        opacity: animation,
-                        child: SlideTransition(
-                          position: Tween<Offset>(
-                            begin: const Offset(0.02, 0),
-                            end: Offset.zero,
-                          ).animate(animation),
-                          child: child,
-                        ),
-                      );
-                    },
-                    child: _getPage(),
-                  ),
-                ),
-              ],
+    return AnimatedGradientMesh(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: Row(
+          children: [
+            // ─── Floating Frosted Sidebar ───────────────────────
+            GlassSidebar(
+              selectedIndex: _selectedIndex,
+              onItemSelected: _onItemSelected,
             ),
-          ),
-        ],
+
+            // ─── Main Content Area ─────────────────────────────
+            Expanded(
+              child: Column(
+                children: [
+                  // ─── Frosted Top Bar ─────────────────────────
+                  GlassTopBar(
+                    userName: widget.userName,
+                    pageTitle: _getPageTitle(s),
+                    onToggleLocale: () => localeProvider.toggleLocale(),
+                  ),
+
+                  // ─── Page Content — seamless animated transitions ────
+                  Expanded(
+                    child: AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 600),
+                      switchInCurve: Curves.easeOutCubic,
+                      switchOutCurve: Curves.easeInCubic,
+                      transitionBuilder: (child, animation) {
+                        return FadeTransition(
+                          opacity: CurvedAnimation(
+                            parent: animation,
+                            curve: const Interval(0.0, 0.6, curve: Curves.easeOut),
+                          ),
+                          child: SlideTransition(
+                            position: Tween<Offset>(
+                              begin: const Offset(0, 0.04),
+                              end: Offset.zero,
+                            ).animate(CurvedAnimation(
+                              parent: animation,
+                              curve: Curves.easeOutCubic,
+                            )),
+                            child: child,
+                          ),
+                        );
+                      },
+                      child: Padding(
+                        key: ValueKey(_currentView.toString() + (_selectedDepartmentId ?? '') + (_selectedCollegeId ?? '')),
+                        padding: const EdgeInsets.only(right: 20, top: 0),
+                        child: _getPage(),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

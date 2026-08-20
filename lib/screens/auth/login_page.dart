@@ -5,6 +5,7 @@ import 'package:dashboard/core/theme/app_theme.dart';
 import 'package:dashboard/core/services/auth_service.dart';
 import 'package:dashboard/core/widgets/animated_snackbar.dart';
 import 'package:dashboard/core/l10n/app_localizations.dart';
+import 'package:dashboard/core/widgets/animated_wavy_background.dart'; // AnimatedVibrantWaves
 
 /// Premium glassmorphism login page with animated mesh background.
 ///
@@ -73,14 +74,21 @@ class _LoginPageState extends State<LoginPage> {
 
     return Scaffold(
       backgroundColor: Colors.transparent,
-      body: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 440),
-            child: _buildGlassCard(s, textTheme),
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: AnimatedVibrantWaves(),
           ),
-        ),
+          Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 440),
+                child: _buildGlassCard(s, textTheme),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -88,29 +96,22 @@ class _LoginPageState extends State<LoginPage> {
   /// The main glass card with backdrop blur, border, and glow.
   Widget _buildGlassCard(S s, TextTheme textTheme) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(28),
+      borderRadius: BorderRadius.circular(24),
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 24, sigmaY: 24),
+        filter: ImageFilter.blur(sigmaX: 20.0, sigmaY: 20.0),
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 36, vertical: 44),
           decoration: BoxDecoration(
-            color: Colors.black.withAlpha(77),
-            borderRadius: BorderRadius.circular(28),
+            color: Colors.white.withOpacity(0.6),
+            borderRadius: BorderRadius.circular(24),
             border: Border.all(
-              color: Colors.white.withAlpha(20),
-              width: 1,
+              color: Colors.white.withOpacity(0.8),
+              width: 1.5,
             ),
             boxShadow: [
               BoxShadow(
-                color: AppColors.primary.withAlpha(31),
-                blurRadius: 48,
-                spreadRadius: -8,
-              ),
-              BoxShadow(
-                color: AppColors.secondary.withAlpha(15),
-                blurRadius: 80,
-                spreadRadius: -12,
-                offset: const Offset(0, 20),
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 30,
               ),
             ],
           ),
@@ -134,17 +135,12 @@ class _LoginPageState extends State<LoginPage> {
                 const SizedBox(height: 32),
 
                 // ─── Title ─────────────────────────────────────────
-                ShaderMask(
-                  shaderCallback: (bounds) => const LinearGradient(
-                    colors: [AppColors.primaryLight, AppColors.secondary],
-                  ).createShader(bounds),
-                  child: Text(
-                    s.welcomeBack,
-                    style: textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: -0.5,
-                      color: Colors.white,
-                    ),
+                Text(
+                  s.welcomeBack,
+                  style: textTheme.headlineMedium?.copyWith(
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: -0.5,
+                    color: const Color(0xFF1E293B),
                   ),
                 )
                     .animate()
@@ -469,50 +465,43 @@ class _GlowingTextFieldState extends State<_GlowingTextField> {
           obscureText: widget.obscure,
           validator: widget.validator,
           style: const TextStyle(
-            color: AppColors.textPrimary,
+            color: Colors.black87,
             fontSize: 15,
           ),
           decoration: InputDecoration(
             labelText: widget.label,
             labelStyle: TextStyle(
-              color: _focused ? AppColors.primaryLight : AppColors.textHint,
+              color: _focused ? AppColors.primary : AppColors.textSecondary,
               fontSize: 14,
             ),
             prefixIcon: Icon(
               widget.icon,
-              color: _focused ? AppColors.primaryLight : AppColors.textHint,
+              color: _focused ? AppColors.primary : AppColors.textSecondary,
               size: 20,
             ),
             suffixIcon: widget.suffixIcon,
             filled: true,
-            fillColor: Colors.white.withAlpha(8),
+            fillColor: Colors.white.withOpacity(0.9),
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
-              borderSide: BorderSide(
-                color: Colors.white.withAlpha(26),
-              ),
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide.none,
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
-              borderSide: BorderSide(
-                color: Colors.white.withAlpha(26),
-              ),
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide.none,
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
-              borderSide: const BorderSide(
-                color: AppColors.primary,
-                width: 1.5,
-              ),
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide.none,
             ),
             errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(12),
               borderSide: const BorderSide(
                 color: AppColors.error,
               ),
             ),
             focusedErrorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(12),
               borderSide: const BorderSide(
                 color: AppColors.error,
                 width: 1.5,

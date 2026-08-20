@@ -1,71 +1,232 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-/// StuStep premium palette — deep navy surfaces with vibrant neon accents.
+/// ─────────────────────────────────────────────────────────────────────────────
+/// StuStep Premium Palette — Stripe-Tier Vibrant Light Theme
+/// ─────────────────────────────────────────────────────────────────────────────
+/// Pearl canvas, pristine white surfaces, Electric Cyan → Vivid Blue gradients,
+/// multi-layered diffuse shadows, and colored halo effects.
 class AppColors {
   AppColors._();
 
-  // ─── Gradient Mesh Blobs ─────────────────────────────────────────────
-  static const Color blob1 = Color(0xFF6C2BD9); // deep violet
-  static const Color blob2 = Color(0xFF7B2FF7); // vivid violet
-  static const Color blob3 = Color(0xFF00D4FF); // electric cyan
-  static const Color blob4 = Color(0xFF0A0A1A); // abyss navy
+  // ─── Canvas & Surfaces ────────────────────────────────────────────────
+  /// Main scaffold background — ultra-premium pearl slate, NOT pure white.
+  static const Color canvas = Color(0xFFF4F7F9);
 
-  // ─── Surface Levels (depth system) ───────────────────────────────────
-  static const Color surface0 = Color(0xFF050510); // deepest
-  static const Color surface1 = Color(0xFF0A0A1A); // base background
-  static const Color surface2 = Color(0xFF12122E); // card level
-  static const Color surface3 = Color(0xFF1A1A40); // elevated
-  static const Color surface4 = Color(0xFF222255); // highest
+  /// Slightly warmer canvas variant for nested sections.
+  static const Color canvasWarm = Color(0xFFF8F9FA);
 
-  // ─── Glass ───────────────────────────────────────────────────────────
-  static const Color glassFill = Color(0x1AFFFFFF); // white 10%
-  static const Color glassBorder = Color(0x33FFFFFF); // white 20%
-  static const Color glassHighlight = Color(0x0DFFFFFF); // white 5%
-  static const Color glassFillDark = Color(0x0DFFFFFF); // white 5%
+  /// Cards, sidebars, panels — pristine white to pop against canvas.
+  static const Color surface = Color(0xFFFFFFFF);
 
-  // ─── Primary Gradient ────────────────────────────────────────────────
-  static const Color primary = Color(0xFF7B2FF7);
-  static const Color primaryLight = Color(0xFFAB7AFF);
-  static const Color primaryDark = Color(0xFF5A1FBF);
-  static const Color secondary = Color(0xFF00D4FF);
+  /// Slightly tinted surface for table headers, hover states.
+  static const Color surfaceTinted = Color(0xFFF8FAFC);
+
+  /// Elevated surface with subtle warmth.
+  static const Color surfaceElevated = Color(0xFFFDFDFE);
+
+  /// Surface for hover states — barely tinted.
+  static const Color surfaceHover = Color(0xFFF0F4F8);
+
+  // ─── Primary Gradient (Electric Cyan → Vivid Blue) ────────────────────
+  static const Color primary = Color(0xFF3A7BD5);
+  static const Color primaryLight = Color(0xFF5B9AE8);
+  static const Color primaryDark = Color(0xFF2A5FA8);
+  static const Color secondary = Color(0xFF00D2FF);
   static const Color secondaryLight = Color(0xFF66E5FF);
 
-  // ─── Neon Accents ────────────────────────────────────────────────────
-  static const Color neonGreen = Color(0xFF00FF88);
-  static const Color neonPink = Color(0xFFFF006E);
-  static const Color neonYellow = Color(0xFFFFE600);
-  static const Color neonOrange = Color(0xFFFF8A00);
+  // ─── Vibrant Accent Gradients ─────────────────────────────────────────
+  static const List<Color> gradientPrimary = [
+    Color(0xFF00D2FF),
+    Color(0xFF3A7BD5),
+  ];
+  static const List<Color> gradientViolet = [
+    Color(0xFF7B2FF7),
+    Color(0xFFAB7AFF),
+  ];
+  static const List<Color> gradientCyan = [
+    Color(0xFF00D2FF),
+    Color(0xFF66E5FF),
+  ];
+  static const List<Color> gradientGreen = [
+    Color(0xFF10B981),
+    Color(0xFF34D399),
+  ];
+  static const List<Color> gradientOrange = [
+    Color(0xFFFF8A00),
+    Color(0xFFFF6B6B),
+  ];
+  static const List<Color> gradientPink = [
+    Color(0xFFFF006E),
+    Color(0xFFFF5C9E),
+  ];
+  static const List<Color> gradientBlue = [
+    Color(0xFF3B82F6),
+    Color(0xFF60A5FA),
+  ];
+  static const List<Color> gradientSunset = [
+    Color(0xFFFF6B6B),
+    Color(0xFFFFD93D),
+  ];
 
-  // ─── Semantic ────────────────────────────────────────────────────────
+  // ─── Neon Accents (for badges, indicators, pulse effects) ─────────────
+  static const Color neonGreen = Color(0xFF00D68F);
+  static const Color neonPink = Color(0xFFFF006E);
+  static const Color neonOrange = Color(0xFFFF8A00);
+  static const Color neonCyan = Color(0xFF00E5FF);
+
+  // ─── Semantic ─────────────────────────────────────────────────────────
   static const Color success = Color(0xFF10B981);
   static const Color error = Color(0xFFEF4444);
   static const Color warning = Color(0xFFF59E0B);
   static const Color info = Color(0xFF3B82F6);
 
-  // ─── Text ────────────────────────────────────────────────────────────
-  static const Color textPrimary = Color(0xFFF0F0F5);
-  static const Color textSecondary = Color(0xB3F0F0F5); // 70%
-  static const Color textHint = Color(0x80F0F0F5); // 50%
-  static const Color textMuted = Color(0x4DF0F0F5); // 30%
+  // ─── Text (dark on light) ─────────────────────────────────────────────
+  static const Color textPrimary = Color(0xFF1A1D26);
+  static const Color textSecondary = Color(0xFF64748B);
+  static const Color textHint = Color(0xFF94A3B8);
+  static const Color textMuted = Color(0xFFCBD5E1);
 
-  // ─── Background scrim for WCAG contrast over glass ───────────────────
-  static const Color textScrim = Color(0x99000000);
+  // ─── Borders & Dividers ───────────────────────────────────────────────
+  static const Color border = Color(0xFFE2E8F0);
+  static const Color borderLight = Color(0xFFF1F5F9);
+  static const Color borderFocus = Color(0xFF3A7BD5);
 
-  // ─── Stat Card Gradients ─────────────────────────────────────────────
-  static const List<Color> gradientViolet = [Color(0xFF7B2FF7), Color(0xFFAB7AFF)];
-  static const List<Color> gradientCyan = [Color(0xFF00D4FF), Color(0xFF66E5FF)];
-  static const List<Color> gradientGreen = [Color(0xFF10B981), Color(0xFF34D399)];
-  static const List<Color> gradientOrange = [Color(0xFFF59E0B), Color(0xFFFBBF24)];
-  static const List<Color> gradientPink = [Color(0xFFFF006E), Color(0xFFFF5C9E)];
-  static const List<Color> gradientBlue = [Color(0xFF3B82F6), Color(0xFF60A5FA)];
+  // ─── Glass (Light Mode Frosted) ───────────────────────────────────────
+  static const Color glassFill = Color(0xB3FFFFFF); // white 70%
+  static const Color glassBorder = Color(0x33000000); // black 20%
+  static const Color glassFillSubtle = Color(0x0A000000); // black 4%
 
-  // ─── Sidebar ─────────────────────────────────────────────────────────
-  static const Color sidebarBg = Color(0xFF0D0D22);
-  static const Color sidebarActive = Color(0x267B2FF7); // primary 15%
-  static const Color sidebarHover = Color(0x1AFFFFFF); // white 10%
+  // ─── Backward-Compat Aliases (legacy dark-theme tokens → light values) ─
+  /// Formerly a dark surface; now maps to surfaceTinted for light mode.
+  static const Color glassFillDark = Color(0xFFF8FAFC); // = surfaceTinted
+  /// Formerly dark sidebar bg; now pristine white surface.
+  static const Color sidebarBg = Color(0xFFFFFFFF); // = surface
+  /// Formerly a dark raised surface; maps to surfaceElevated.
+  static const Color surface3 = Color(0xFFF4F7F9); // = canvas
+  /// Formerly the base dark surface; maps to surfaceTinted.
+  static const Color surface0 = Color(0xFFF1F5F9); // light slate
+  /// Neon yellow for accent icons.
+  static const Color neonYellow = Color(0xFFFFD93D);
+  /// Gradient second-stop alias used by auth and colleges pages.
+  static const Color blob2 = Color(0xFF00D2FF); // = secondary (Electric Cyan)
+
+  // ─── Sidebar ──────────────────────────────────────────────────────────
+  static const Color sidebarActive = Color(0x143A7BD5); // primary 8%
+  static const Color sidebarHover = Color(0x0A000000); // black 4%
+
+  // ─── Multi-Layered Shadow System ──────────────────────────────────────
+
+  /// Primary soft shadow for floating card elements
+  static List<BoxShadow> get softShadow => [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.04),
+          blurRadius: 24,
+          offset: const Offset(0, 12),
+          spreadRadius: -4,
+        ),
+        BoxShadow(
+          color: Colors.black.withOpacity(0.02),
+          blurRadius: 8,
+          offset: const Offset(0, 4),
+        ),
+        // Subtle ambient halo
+        BoxShadow(
+          color: primary.withOpacity(0.02),
+          blurRadius: 40,
+          offset: Offset.zero,
+          spreadRadius: -8,
+        ),
+      ];
+
+  /// Elevated shadow for hovered/active elements — deeper, wider spread
+  static List<BoxShadow> get elevatedShadow => [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.06),
+          blurRadius: 32,
+          offset: const Offset(0, 16),
+          spreadRadius: -4,
+        ),
+        BoxShadow(
+          color: Colors.black.withOpacity(0.03),
+          blurRadius: 12,
+          offset: const Offset(0, 6),
+        ),
+        // Primary halo on elevation
+        BoxShadow(
+          color: primary.withOpacity(0.04),
+          blurRadius: 48,
+          offset: Offset.zero,
+          spreadRadius: -8,
+        ),
+      ];
+
+  /// Ultra-soft shadow for sidebar and persistent panels
+  static List<BoxShadow> get panelShadow => [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.05),
+          blurRadius: 36,
+          offset: const Offset(0, 8),
+          spreadRadius: -6,
+        ),
+        BoxShadow(
+          color: Colors.black.withOpacity(0.02),
+          blurRadius: 12,
+          offset: const Offset(0, 4),
+        ),
+        BoxShadow(
+          color: primary.withOpacity(0.03),
+          blurRadius: 48,
+          offset: Offset.zero,
+          spreadRadius: -10,
+        ),
+      ];
+
+  /// Card-specific shadow — course cards, stat cards
+  static List<BoxShadow> cardShadow({bool hovered = false}) => [
+        BoxShadow(
+          color: Colors.black.withOpacity(hovered ? 0.06 : 0.035),
+          blurRadius: hovered ? 28 : 20,
+          offset: Offset(0, hovered ? 14 : 8),
+          spreadRadius: hovered ? -2 : -4,
+        ),
+        BoxShadow(
+          color: Colors.black.withOpacity(hovered ? 0.03 : 0.015),
+          blurRadius: hovered ? 10 : 6,
+          offset: Offset(0, hovered ? 4 : 2),
+        ),
+        if (hovered)
+          BoxShadow(
+            color: primary.withOpacity(0.06),
+            blurRadius: 32,
+            offset: Offset.zero,
+            spreadRadius: -6,
+          ),
+      ];
+
+  /// Colored glow shadow (for gradient buttons)
+  static List<BoxShadow> gradientGlow(Color color,
+          {bool hovered = false}) =>
+      [
+        BoxShadow(
+          color: color.withOpacity(hovered ? 0.35 : 0.2),
+          blurRadius: hovered ? 24 : 16,
+          offset: const Offset(0, 8),
+          spreadRadius: -4,
+        ),
+        if (hovered)
+          BoxShadow(
+            color: color.withOpacity(0.15),
+            blurRadius: 40,
+            offset: Offset.zero,
+            spreadRadius: -8,
+          ),
+      ];
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// AppTheme — Fully customized ThemeData, zero Material defaults visible
+// ─────────────────────────────────────────────────────────────────────────────
 class AppTheme {
   AppTheme._();
 
@@ -123,7 +284,8 @@ class AppTheme {
         fontWeight: FontWeight.w600,
         letterSpacing: 0.5,
       ),
-      labelMedium: base.labelMedium?.copyWith(color: AppColors.textSecondary),
+      labelMedium:
+          base.labelMedium?.copyWith(color: AppColors.textSecondary),
       labelSmall: base.labelSmall?.copyWith(
         color: AppColors.textHint,
         letterSpacing: 0.5,
@@ -136,12 +298,12 @@ class AppTheme {
 
     return ThemeData(
       useMaterial3: true,
-      brightness: Brightness.dark,
-      scaffoldBackgroundColor: Colors.transparent,
-      colorScheme: const ColorScheme.dark(
+      brightness: Brightness.light,
+      scaffoldBackgroundColor: AppColors.canvas,
+      colorScheme: const ColorScheme.light(
         primary: AppColors.primary,
         secondary: AppColors.secondary,
-        surface: AppColors.surface2,
+        surface: AppColors.surface,
         error: AppColors.error,
       ),
       textTheme: textTheme,
@@ -152,37 +314,36 @@ class AppTheme {
         iconTheme: const IconThemeData(color: AppColors.textPrimary),
       ),
       cardTheme: CardThemeData(
-        color: AppColors.glassFill,
+        color: AppColors.surface,
         elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-          side: const BorderSide(color: AppColors.glassBorder, width: 1),
+          borderRadius: BorderRadius.circular(20),
         ),
       ),
       dialogTheme: DialogThemeData(
-        backgroundColor: AppColors.surface3,
+        backgroundColor: AppColors.surface,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-          side: const BorderSide(color: AppColors.glassBorder, width: 1),
+          borderRadius: BorderRadius.circular(24),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: AppColors.glassHighlight,
+        fillColor: AppColors.surfaceTinted,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.glassBorder),
+          borderRadius: BorderRadius.circular(14),
+          borderSide: const BorderSide(color: AppColors.border),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.glassBorder),
+          borderRadius: BorderRadius.circular(14),
+          borderSide: const BorderSide(color: AppColors.border),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.primary, width: 2),
+          borderRadius: BorderRadius.circular(14),
+          borderSide:
+              const BorderSide(color: AppColors.primary, width: 2),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(14),
           borderSide: const BorderSide(color: AppColors.error),
         ),
         labelStyle: textTheme.bodyMedium,
@@ -194,17 +355,19 @@ class AppTheme {
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primary,
           foregroundColor: Colors.white,
-          padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
+          padding:
+              const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(14),
           ),
+          elevation: 0,
           textStyle:
               textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w600),
         ),
       ),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
-          foregroundColor: AppColors.primaryLight,
+          foregroundColor: AppColors.primary,
           textStyle:
               textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w500),
         ),
@@ -214,31 +377,34 @@ class AppTheme {
           if (states.contains(WidgetState.selected)) {
             return AppColors.success;
           }
-          return AppColors.textHint;
+          return AppColors.textMuted;
         }),
         trackColor: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
             return AppColors.success.withValues(alpha: 0.3);
           }
-          return AppColors.glassBorder;
+          return AppColors.border;
         }),
       ),
       snackBarTheme: SnackBarThemeData(
-        backgroundColor: AppColors.surface3,
-        contentTextStyle: textTheme.bodyMedium,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        backgroundColor: AppColors.textPrimary,
+        contentTextStyle:
+            textTheme.bodyMedium?.copyWith(color: Colors.white),
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14)),
         behavior: SnackBarBehavior.floating,
       ),
       dataTableTheme: DataTableThemeData(
         headingTextStyle: textTheme.titleSmall?.copyWith(
           fontWeight: FontWeight.w700,
-          color: AppColors.textPrimary,
+          color: AppColors.textSecondary,
         ),
         dataTextStyle: textTheme.bodyMedium,
-        headingRowColor: WidgetStateProperty.all(AppColors.glassHighlight),
+        headingRowColor:
+            WidgetStateProperty.all(AppColors.surfaceTinted),
         dataRowColor: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.hovered)) {
-            return AppColors.glassFill;
+            return AppColors.primary.withValues(alpha: 0.04);
           }
           return Colors.transparent;
         }),
@@ -246,23 +412,16 @@ class AppTheme {
       ),
       tooltipTheme: TooltipThemeData(
         decoration: BoxDecoration(
-          color: AppColors.surface4,
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: AppColors.glassBorder),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.primary.withValues(alpha: 0.2),
-              blurRadius: 12,
-              spreadRadius: -2,
-            ),
-          ],
+          color: AppColors.textPrimary,
+          borderRadius: BorderRadius.circular(10),
+          boxShadow: AppColors.softShadow,
         ),
-        textStyle: textTheme.bodySmall?.copyWith(color: AppColors.textPrimary),
+        textStyle: textTheme.bodySmall?.copyWith(color: Colors.white),
         waitDuration: const Duration(milliseconds: 400),
       ),
       scrollbarTheme: ScrollbarThemeData(
         thumbColor: WidgetStateProperty.all(
-          AppColors.primary.withValues(alpha: 0.3),
+          AppColors.textMuted.withValues(alpha: 0.4),
         ),
         radius: const Radius.circular(8),
         thickness: WidgetStateProperty.all(6),

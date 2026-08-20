@@ -14,7 +14,6 @@ import 'package:dashboard/core/router/app_router.dart';
 
 /// LocaleProviderScope — InheritedWidget so any descendant can access
 /// the locale provider without a DI package.
-///
 
 class LocaleProviderScope extends InheritedNotifier<LocaleProvider> {
   const LocaleProviderScope({

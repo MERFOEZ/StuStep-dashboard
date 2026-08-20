@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dashboard/core/theme/app_theme.dart';
 import 'package:dashboard/core/l10n/app_localizations.dart';
-import 'package:dashboard/core/services/firestore_service.dart';
 import 'package:dashboard/core/widgets/animated_stat_card.dart';
 
 /// Premium dashboard home with animated stat cards, welcome banner,
@@ -20,7 +20,35 @@ class DashboardHome extends StatefulWidget {
 }
 
 class _DashboardHomeState extends State<DashboardHome> {
-  final _firestoreService = FirestoreService();
+  late Future<Map<String, int>> _countsFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _countsFuture = fetchStatistics();
+  }
+
+  Future<Map<String, int>> fetchStatistics() async {
+    final results = await Future.wait([
+      FirebaseFirestore.instance.collection('colleges').count().get(),
+      FirebaseFirestore.instance.collection('departments').count().get(),
+      FirebaseFirestore.instance.collection('courses').count().get(),
+      FirebaseFirestore.instance.collection('store_items').count().get(),
+    ]);
+
+    return {
+      'colleges': results[0].count ?? 0,
+      'departments': results[1].count ?? 0,
+      'courses': results[2].count ?? 0,
+      'store_items': results[3].count ?? 0,
+    };
+  }
+
+  void _reloadCounts() {
+    setState(() {
+      _countsFuture = fetchStatistics();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -126,7 +154,7 @@ class _DashboardHomeState extends State<DashboardHome> {
                       ),
                     ),
                     const SizedBox(width: 8),
-                    Text('👋', style: TextStyle(fontSize: 24))
+                    Text('👋', style: const TextStyle(fontSize: 24))
                         .animate(onPlay: (c) => c.repeat(reverse: true))
                         .rotate(
                           begin: -0.05,
@@ -197,104 +225,106 @@ class _DashboardHomeState extends State<DashboardHome> {
   }
 
   Widget _buildStatCards(S s) {
-    return Row(
-      children: [
-        Expanded(
-          child: StreamBuilder<int>(
-            stream: _firestoreService.collectionCount('colleges'),
-            builder: (context, snap) {
-              return AnimatedStatCard(
+    return FutureBuilder<Map<String, int>>(
+      future: _countsFuture,
+      builder: (context, snapshot) {
+        final bool isLoading = snapshot.connectionState == ConnectionState.waiting;
+        final bool hasError = snapshot.hasError;
+        
+        final StatCardState cardState = isLoading 
+            ? StatCardState.loading 
+            : (hasError ? StatCardState.error : StatCardState.loaded);
+
+        final counts = snapshot.data ?? {};
+
+        return Row(
+          children: [
+            Expanded(
+              child: AnimatedStatCard(
                 label: s.colleges,
-                value: snap.data ?? 0,
+                value: counts['colleges'] ?? 0,
                 icon: Icons.account_balance_rounded,
                 gradient: AppColors.gradientViolet,
+                state: cardState,
+                onRetry: _reloadCounts,
                 tooltip: s.isArabic
                     ? 'إجمالي عدد الكليات المسجلة'
                     : 'Total registered colleges',
-              );
-            },
-          ).animate()
-              .fade(duration: 600.ms, delay: 200.ms)
-              .scale(
-                begin: const Offset(0.9, 0.9),
-                duration: 600.ms,
-                delay: 200.ms,
-                curve: Curves.easeOutBack,
-              ),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: StreamBuilder<int>(
-            stream: _firestoreService.collectionCount('departments'),
-            builder: (context, snap) {
-              return AnimatedStatCard(
+              ).animate()
+                  .fade(duration: 600.ms, delay: 200.ms)
+                  .scale(
+                    begin: const Offset(0.9, 0.9),
+                    duration: 600.ms,
+                    delay: 200.ms,
+                    curve: Curves.easeOutBack,
+                  ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: AnimatedStatCard(
                 label: s.departments,
-                value: snap.data ?? 0,
+                value: counts['departments'] ?? 0,
                 icon: Icons.business_rounded,
                 gradient: AppColors.gradientCyan,
+                state: cardState,
+                onRetry: _reloadCounts,
                 tooltip: s.isArabic
                     ? 'إجمالي عدد الأقسام'
                     : 'Total departments',
-              );
-            },
-          ).animate()
-              .fade(duration: 600.ms, delay: 350.ms)
-              .scale(
-                begin: const Offset(0.9, 0.9),
-                duration: 600.ms,
-                delay: 350.ms,
-                curve: Curves.easeOutBack,
-              ),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: StreamBuilder<int>(
-            stream: _firestoreService.collectionCount('courses'),
-            builder: (context, snap) {
-              return AnimatedStatCard(
+              ).animate()
+                  .fade(duration: 600.ms, delay: 350.ms)
+                  .scale(
+                    begin: const Offset(0.9, 0.9),
+                    duration: 600.ms,
+                    delay: 350.ms,
+                    curve: Curves.easeOutBack,
+                  ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: AnimatedStatCard(
                 label: s.courses,
-                value: snap.data ?? 0,
+                value: counts['courses'] ?? 0,
                 icon: Icons.menu_book_rounded,
                 gradient: AppColors.gradientGreen,
+                state: cardState,
+                onRetry: _reloadCounts,
                 tooltip: s.isArabic
                     ? 'إجمالي عدد المقررات'
                     : 'Total courses',
-              );
-            },
-          ).animate()
-              .fade(duration: 600.ms, delay: 500.ms)
-              .scale(
-                begin: const Offset(0.9, 0.9),
-                duration: 600.ms,
-                delay: 500.ms,
-                curve: Curves.easeOutBack,
-              ),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: StreamBuilder<int>(
-            stream: _firestoreService.collectionCount('store'),
-            builder: (context, snap) {
-              return AnimatedStatCard(
+              ).animate()
+                  .fade(duration: 600.ms, delay: 500.ms)
+                  .scale(
+                    begin: const Offset(0.9, 0.9),
+                    duration: 600.ms,
+                    delay: 500.ms,
+                    curve: Curves.easeOutBack,
+                  ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: AnimatedStatCard(
                 label: s.store,
-                value: snap.data ?? 0,
+                value: counts['store_items'] ?? 0,
                 icon: Icons.storefront_rounded,
                 gradient: AppColors.gradientOrange,
+                state: cardState,
+                onRetry: _reloadCounts,
                 tooltip: s.isArabic
                     ? 'إجمالي عناصر المتجر'
                     : 'Total store items',
-              );
-            },
-          ).animate()
-              .fade(duration: 600.ms, delay: 650.ms)
-              .scale(
-                begin: const Offset(0.9, 0.9),
-                duration: 600.ms,
-                delay: 650.ms,
-                curve: Curves.easeOutBack,
-              ),
-        ),
-      ],
+              ).animate()
+                  .fade(duration: 600.ms, delay: 650.ms)
+                  .scale(
+                    begin: const Offset(0.9, 0.9),
+                    duration: 600.ms,
+                    delay: 650.ms,
+                    curve: Curves.easeOutBack,
+                  ),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -340,7 +370,7 @@ class _DashboardHomeState extends State<DashboardHome> {
         children: [
           Row(
             children: [
-              Icon(Icons.flash_on_rounded, color: AppColors.neonYellow, size: 20),
+              const Icon(Icons.flash_on_rounded, color: AppColors.neonYellow, size: 20),
               const SizedBox(width: 8),
               Text(
                 s.isArabic ? 'إجراءات سريعة' : 'Quick Actions',
@@ -368,30 +398,6 @@ class _DashboardHomeState extends State<DashboardHome> {
   }
 
   Widget _buildActivityTimeline(S s) {
-    final activities = <_Activity>[
-      _Activity(
-        icon: Icons.check_circle_rounded,
-        color: AppColors.success,
-        title: s.isArabic ? 'النظام جاهز' : 'System Ready',
-        subtitle: s.isArabic ? 'جميع الخدمات تعمل بشكل طبيعي' : 'All services running normally',
-        time: s.isArabic ? 'الآن' : 'Now',
-      ),
-      _Activity(
-        icon: Icons.security_rounded,
-        color: AppColors.info,
-        title: s.isArabic ? 'تسجيل دخول ناجح' : 'Successful Login',
-        subtitle: widget.userName,
-        time: _formatTime(DateTime.now()),
-      ),
-      _Activity(
-        icon: Icons.cloud_done_rounded,
-        color: AppColors.neonGreen,
-        title: s.isArabic ? 'Firebase متصل' : 'Firebase Connected',
-        subtitle: s.isArabic ? 'الاتصال بقاعدة البيانات نشط' : 'Database connection active',
-        time: s.isArabic ? 'مستمر' : 'Ongoing',
-      ),
-    ];
-
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -406,7 +412,7 @@ class _DashboardHomeState extends State<DashboardHome> {
         children: [
           Row(
             children: [
-              Icon(Icons.timeline_rounded, color: AppColors.secondary, size: 20),
+              const Icon(Icons.timeline_rounded, color: AppColors.secondary, size: 20),
               const SizedBox(width: 8),
               Text(
                 s.isArabic ? 'آخر النشاطات' : 'Recent Activity',
@@ -417,21 +423,82 @@ class _DashboardHomeState extends State<DashboardHome> {
             ],
           ),
           const SizedBox(height: 20),
-          ...activities.asMap().entries.map((entry) {
-            final i = entry.key;
-            final a = entry.value;
-            return _ActivityItem(activity: a, isLast: i == activities.length - 1)
-                .animate()
-                .fade(
-                  duration: 400.ms,
-                  delay: Duration(milliseconds: 800 + i * 150),
-                )
-                .slideX(
-                  begin: 0.05,
-                  duration: 400.ms,
-                  delay: Duration(milliseconds: 800 + i * 150),
+          StreamBuilder<QuerySnapshot>(
+            stream: FirebaseFirestore.instance
+                .collection('users')
+                .orderBy('createdAt', descending: true)
+                .limit(3)
+                .snapshots(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(24.0),
+                    child: CircularProgressIndicator(),
+                  ),
                 );
-          }),
+              }
+
+              if (snapshot.hasError) {
+                return Center(
+                  child: Text(
+                    s.isArabic ? 'حدث خطأ' : 'An error occurred',
+                    style: const TextStyle(color: AppColors.error),
+                  ),
+                );
+              }
+
+              if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                return Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(24.0),
+                    child: Text(
+                      s.isArabic ? 'لا توجد نشاطات حديثة' : 'No recent activity',
+                      style: const TextStyle(color: AppColors.textHint),
+                    ),
+                  ),
+                );
+              }
+
+              final docs = snapshot.data!.docs;
+              return Column(
+                children: docs.asMap().entries.map((entry) {
+                  final index = entry.key;
+                  final doc = entry.value;
+                  final data = doc.data() as Map<String, dynamic>? ?? {};
+                  
+                  final name = data['name'] ?? data['email'] ?? (s.isArabic ? 'مستخدم مجهول' : 'Unknown User');
+                  final timestamp = data['createdAt'] as Timestamp?;
+                  final timeStr = timestamp != null 
+                      ? _formatTime(timestamp.toDate()) 
+                      : (s.isArabic ? 'الآن' : 'Just now');
+
+                  final activity = _Activity(
+                    icon: Icons.person_add_alt_1_rounded,
+                    color: AppColors.info,
+                    title: s.isArabic ? 'تسجيل مستخدم جديد' : 'New User Registered',
+                    subtitle: name,
+                    time: timeStr,
+                  );
+
+                  return _ActivityItem(
+                    activity: activity,
+                    isLast: index == docs.length - 1,
+                  )
+                      .animate()
+                      .fade(
+                        duration: 400.ms,
+                        delay: Duration(milliseconds: 200 + index * 150),
+                      )
+                      .slideX(
+                        begin: 0.05,
+                        duration: 400.ms,
+                        delay: Duration(milliseconds: 200 + index * 150),
+                      );
+                }).toList(),
+              );
+            },
+          ),
         ],
       ),
     );
@@ -620,7 +687,7 @@ class _ActivityItem extends StatelessWidget {
                     children: [
                       Text(
                         activity.title,
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: AppColors.textPrimary,
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
@@ -628,7 +695,7 @@ class _ActivityItem extends StatelessWidget {
                       ),
                       Text(
                         activity.time,
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: AppColors.textMuted,
                           fontSize: 11,
                         ),
@@ -638,7 +705,7 @@ class _ActivityItem extends StatelessWidget {
                   const SizedBox(height: 2),
                   Text(
                     activity.subtitle,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: AppColors.textHint,
                       fontSize: 12,
                     ),

@@ -4,15 +4,18 @@ import 'package:dashboard/core/theme/app_theme.dart';
 import 'package:dashboard/core/l10n/app_localizations.dart';
 import 'package:dashboard/core/models/course.dart';
 import 'package:dashboard/core/services/firestore_service.dart';
-import 'package:dashboard/core/widgets/glass_data_table.dart';
 import 'package:dashboard/core/widgets/glass_dialog.dart';
 import 'package:dashboard/core/widgets/empty_state_widget.dart';
-import 'package:dashboard/core/widgets/shimmer_loading.dart';
 import 'package:dashboard/core/widgets/animated_snackbar.dart';
 import 'package:dashboard/screens/dashboard/multi_video_upload_dialog.dart';
 import 'package:dashboard/screens/dashboard/video_management_panel.dart';
 
-/// CRUD page for managing courses with integrated video management panel.
+/// ─────────────────────────────────────────────────────────────────────────────
+/// Courses Page — Premium Card-Based CRUD Interface
+/// ─────────────────────────────────────────────────────────────────────────────
+/// Destroys the default DataTable. Builds a custom, spacious list view where
+/// each course is a beautifully padded white card containing vibrant accents,
+/// metadata pills, and animated action buttons.
 class CoursesPage extends StatefulWidget {
   final String? departmentId;
   final VoidCallback? onBack;
@@ -25,7 +28,7 @@ class CoursesPage extends StatefulWidget {
 
 class _CoursesPageState extends State<CoursesPage> {
   final _firestoreService = FirestoreService();
-  Course? _selectedCourse; // For the video management panel
+  Course? _selectedCourse;
 
   void _showAddEditDialog({Course? course}) async {
     final s = S.of(context);
@@ -52,42 +55,27 @@ class _CoursesPageState extends State<CoursesPage> {
                   controller: titleCtrl,
                   decoration: InputDecoration(
                     labelText: s.courseTitle,
-                    prefixIcon: Icon(
-                      Icons.menu_book_rounded,
-                      color: AppColors.primaryLight,
-                      size: 20,
-                    ),
+                    prefixIcon: Icon(Icons.menu_book_rounded, color: AppColors.primary, size: 20),
                   ),
-                  style: TextStyle(color: AppColors.textPrimary),
-                  validator: (v) =>
-                      v == null || v.trim().isEmpty ? s.requiredField : null,
+                  style: const TextStyle(color: AppColors.textPrimary),
+                  validator: (v) => v == null || v.trim().isEmpty ? s.requiredField : null,
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: imageCtrl,
                   decoration: InputDecoration(
                     labelText: s.coverImageUrl,
-                    prefixIcon: Icon(
-                      Icons.image_rounded,
-                      color: AppColors.primaryLight,
-                      size: 20,
-                    ),
+                    prefixIcon: Icon(Icons.image_rounded, color: AppColors.primary, size: 20),
                   ),
-                  style: TextStyle(color: AppColors.textPrimary),
+                  style: const TextStyle(color: AppColors.textPrimary),
                 ),
                 const SizedBox(height: 20),
-                // Active toggle
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    color: AppColors.glassFillDark,
-                    border: Border.all(
-                      color: AppColors.glassBorder.withValues(alpha: 0.2),
-                    ),
+                    borderRadius: BorderRadius.circular(14),
+                    color: AppColors.surfaceTinted,
+                    border: Border.all(color: AppColors.border.withOpacity(0.4)),
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -95,22 +83,12 @@ class _CoursesPageState extends State<CoursesPage> {
                       Row(
                         children: [
                           Icon(
-                            isActive
-                                ? Icons.check_circle_rounded
-                                : Icons.cancel_rounded,
-                            color: isActive
-                                ? AppColors.success
-                                : AppColors.textMuted,
+                            isActive ? Icons.check_circle_rounded : Icons.cancel_rounded,
+                            color: isActive ? AppColors.success : AppColors.textMuted,
                             size: 20,
                           ),
                           const SizedBox(width: 10),
-                          Text(
-                            s.isActive,
-                            style: TextStyle(
-                              color: AppColors.textSecondary,
-                              fontSize: 14,
-                            ),
-                          ),
+                          Text(s.isActive, style: const TextStyle(color: AppColors.textSecondary, fontSize: 14)),
                         ],
                       ),
                       Switch(
@@ -126,10 +104,7 @@ class _CoursesPageState extends State<CoursesPage> {
         },
       ),
       actions: [
-        GlassDialogButton(
-          label: s.cancel,
-          onPressed: () => Navigator.of(context).pop(),
-        ),
+        GlassDialogButton(label: s.cancel, onPressed: () => Navigator.of(context).pop()),
         StatefulBuilder(
           builder: (context, setButtonState) {
             return GlassDialogButton(
@@ -140,43 +115,28 @@ class _CoursesPageState extends State<CoursesPage> {
                 if (!formKey.currentState!.validate()) return;
                 setButtonState(() => isLoading = true);
                 try {
+                  final newCourse = Course(
+                    id: course?.id ?? '',
+                    title: titleCtrl.text.trim(),
+                    departmentId: selectedDeptId,
+                    coverImageUrl: imageCtrl.text.trim(),
+                    isActive: isActive,
+                  );
                   if (course == null) {
-                    await _firestoreService.addCourse(
-                      Course(
-                        id: '',
-                        title: titleCtrl.text.trim(),
-                        departmentId: selectedDeptId,
-                        coverImageUrl: imageCtrl.text.trim(),
-                        isActive: isActive,
-                      ),
-                    );
+                    await _firestoreService.addCourse(newCourse);
                     if (mounted) {
                       Navigator.of(context).pop();
                       showAnimatedSnackBar(context, message: s.courseAdded);
                     }
                   } else {
-                    await _firestoreService.updateCourse(
-                      Course(
-                        id: course.id,
-                        title: titleCtrl.text.trim(),
-                        departmentId: selectedDeptId,
-                        coverImageUrl: imageCtrl.text.trim(),
-                        isActive: isActive,
-                      ),
-                    );
+                    await _firestoreService.updateCourse(newCourse);
                     if (mounted) {
                       Navigator.of(context).pop();
                       showAnimatedSnackBar(context, message: s.courseUpdated);
                     }
                   }
                 } catch (e) {
-                  if (mounted) {
-                    showAnimatedSnackBar(
-                      context,
-                      message: e.toString(),
-                      isError: true,
-                    );
-                  }
+                  if (mounted) showAnimatedSnackBar(context, message: e.toString(), isError: true);
                 } finally {
                   if (mounted) setButtonState(() => isLoading = false);
                 }
@@ -200,27 +160,16 @@ class _CoursesPageState extends State<CoursesPage> {
     if (confirmed == true) {
       try {
         await _firestoreService.deleteCourse(course.id);
-        if (_selectedCourse?.id == course.id) {
-          setState(() => _selectedCourse = null);
-        }
-        if (mounted) {
-          showAnimatedSnackBar(context, message: s.courseDeleted);
-        }
+        if (_selectedCourse?.id == course.id) setState(() => _selectedCourse = null);
+        if (mounted) showAnimatedSnackBar(context, message: s.courseDeleted);
       } catch (e) {
-        if (mounted) {
-          showAnimatedSnackBar(context, message: e.toString(), isError: true);
-        }
+        if (mounted) showAnimatedSnackBar(context, message: e.toString(), isError: true);
       }
     }
   }
 
-  void _openVideoPanel(Course course) {
-    setState(() => _selectedCourse = course);
-  }
-
-  void _closeVideoPanel() {
-    setState(() => _selectedCourse = null);
-  }
+  void _openVideoPanel(Course course) => setState(() => _selectedCourse = course);
+  void _closeVideoPanel() => setState(() => _selectedCourse = null);
 
   @override
   Widget build(BuildContext context) {
@@ -228,48 +177,31 @@ class _CoursesPageState extends State<CoursesPage> {
 
     return Stack(
       children: [
-        // ── Main Content ──
         Padding(
           padding: const EdgeInsets.all(24),
           child: Column(
             children: [
               _buildHeader(s),
-              const SizedBox(height: 20),
+              const SizedBox(height: 24),
               Expanded(
                 child: StreamBuilder<List<Course>>(
                   stream: widget.departmentId != null
-                      ? _firestoreService.coursesByDepartmentStream(
-                          widget.departmentId!,
-                        )
+                      ? _firestoreService.coursesByDepartmentStream(widget.departmentId!)
                       : _firestoreService.coursesStream(),
                   builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Column(
-                        children: List.generate(
-                          5,
-                          (_) => Padding(
-                            padding: const EdgeInsets.only(bottom: 8),
-                            child: ShimmerTableRow(columns: 5),
-                          ),
-                        ),
-                      );
-                    }
+                    if (snapshot.connectionState == ConnectionState.waiting) return _buildShimmerState();
 
                     final courses = snapshot.data ?? [];
-
                     if (courses.isEmpty) {
                       return EmptyStateWidget(
                         icon: Icons.menu_book_rounded,
                         title: s.noCourses,
-                        subtitle: s.isArabic
-                            ? 'ابدأ بإضافة أول دورة للنظام'
-                            : 'Start by adding the first course',
+                        subtitle: s.isArabic ? 'ابدأ بإضافة أول دورة للنظام' : 'Start by adding the first course',
                         actionLabel: s.addCourse,
                         onAction: () => _showAddEditDialog(),
                       );
                     }
 
-                    // Update selected course data from stream
                     if (_selectedCourse != null) {
                       final updated = courses.where((c) => c.id == _selectedCourse!.id);
                       if (updated.isNotEmpty && updated.first.lectures.length != _selectedCourse!.lectures.length) {
@@ -279,78 +211,23 @@ class _CoursesPageState extends State<CoursesPage> {
                       }
                     }
 
-                    return SingleChildScrollView(
-                      child: GlassDataTable(
-                        columns: [
-                          s.courseTitle,
-                          s.coverImage,
-                          s.isArabic ? 'الفيديوهات' : 'Videos',
-                          s.isActive,
-                          s.actions,
-                        ],
-                        rows: courses.map((c) {
-                          final isSelected = _selectedCourse?.id == c.id;
-                          return GlassTableRow(
-                            id: c.id,
-                            cells: [
-                              Text(
-                                c.title,
-                                style: TextStyle(
-                                  color: isSelected
-                                      ? AppColors.primaryLight
-                                      : AppColors.textPrimary,
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 14,
-                                ),
-                              ),
-                              // Cover image preview
-                              c.coverImageUrl.isNotEmpty
-                                  ? Tooltip(
-                                      message: c.coverImageUrl,
-                                      child: Container(
-                                        width: 36,
-                                        height: 36,
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(8),
-                                          color: AppColors.glassFill,
-                                          image: DecorationImage(
-                                            image: NetworkImage(c.coverImageUrl),
-                                            fit: BoxFit.cover,
-                                            onError: (e, st) {},
-                                          ),
-                                        ),
-                                      ),
-                                    )
-                                  : Icon(
-                                      Icons.image_not_supported_rounded,
-                                      color: AppColors.textMuted,
-                                      size: 20,
-                                    ),
-                              // Video count badge
-                              _VideoCountBadge(
-                                count: c.lectures.length,
-                                isSelected: isSelected,
-                                onTap: () => _openVideoPanel(c),
-                              ),
-                              StatusBadge(
-                                isActive: c.isActive,
-                                activeLabel: s.active,
-                                inactiveLabel: s.inactive,
-                              ),
-                              TableActionButtons(
-                                editTooltip: s.edit,
-                                deleteTooltip: s.delete,
-                                addVideoTooltip: s.isArabic
-                                    ? 'رفع فيديو'
-                                    : 'Add Video',
-                                onAddVideo: () => _showMultiUploadDialog(c),
-                                onEdit: () => _showAddEditDialog(course: c),
-                                onDelete: () => _handleDelete(c),
-                              ),
-                            ],
-                          );
-                        }).toList(),
-                      ),
+                    return ListView.separated(
+                      padding: const EdgeInsets.only(bottom: 24),
+                      itemCount: courses.length,
+                      separatorBuilder: (_, __) => const SizedBox(height: 16),
+                      itemBuilder: (context, index) {
+                        final c = courses[index];
+                        final isSelected = _selectedCourse?.id == c.id;
+                        return _CourseCard(
+                          course: c,
+                          isSelected: isSelected,
+                          onVideoTap: () => _openVideoPanel(c),
+                          onEdit: () => _showAddEditDialog(course: c),
+                          onDelete: () => _handleDelete(c),
+                          onAddVideo: () => _showMultiUploadDialog(c),
+                        ).animate().fade(duration: 400.ms, delay: Duration(milliseconds: 50 * index))
+                            .slideY(begin: 0.1, duration: 400.ms, delay: Duration(milliseconds: 50 * index), curve: Curves.easeOutCubic);
+                      },
                     );
                   },
                 ),
@@ -358,20 +235,13 @@ class _CoursesPageState extends State<CoursesPage> {
             ],
           ),
         ),
-
-        // ── Video Management Side Panel (overlay) ──
         if (_selectedCourse != null) ...[
-          // Backdrop
           Positioned.fill(
             child: GestureDetector(
               onTap: _closeVideoPanel,
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 300),
-                color: Colors.black.withValues(alpha: 0.3),
-              ),
+              child: Container(color: Colors.black.withOpacity(0.12)),
             ),
-          ),
-          // Panel
+          ).animate().fade(duration: 300.ms, curve: Curves.easeOut),
           Positioned(
             top: 0,
             bottom: 0,
@@ -381,7 +251,7 @@ class _CoursesPageState extends State<CoursesPage> {
               course: _selectedCourse!,
               onClose: _closeVideoPanel,
             ),
-          ),
+          ).animate().slideX(begin: 0.3, duration: 400.ms, curve: Curves.easeOutCubic).fade(duration: 300.ms),
         ],
       ],
     );
@@ -390,11 +260,23 @@ class _CoursesPageState extends State<CoursesPage> {
   void _showMultiUploadDialog(Course level) {
     showGlassDialog(
       context: context,
-      title: S.of(context).isArabic
-          ? 'رفع فيديوهات متعددة'
-          : 'Multi-Video Upload',
+      title: S.of(context).isArabic ? 'رفع فيديوهات متعددة' : 'Multi-Video Upload',
       content: MultiVideoUploadDialog(level: level),
-      actions: [], // Actions are built inside the dialog itself
+      actions: [],
+    );
+  }
+
+  Widget _buildShimmerState() {
+    return ListView.separated(
+      itemCount: 5,
+      separatorBuilder: (_, __) => const SizedBox(height: 16),
+      itemBuilder: (context, index) => Container(
+        height: 100,
+        decoration: BoxDecoration(
+          color: AppColors.surfaceTinted,
+          borderRadius: BorderRadius.circular(20),
+        ),
+      ).animate(onPlay: (c) => c.repeat()).shimmer(duration: 1500.ms, color: Colors.white.withOpacity(0.5)),
     );
   }
 
@@ -402,12 +284,8 @@ class _CoursesPageState extends State<CoursesPage> {
     return Row(
       children: [
         if (widget.onBack != null) ...[
-          IconButton(
-            icon: Icon(Icons.arrow_back_rounded, color: AppColors.textPrimary),
-            onPressed: widget.onBack,
-            tooltip: s.isArabic ? 'رجوع' : 'Back',
-          ),
-          const SizedBox(width: 8),
+          _BackButton(onTap: widget.onBack!),
+          const SizedBox(width: 12),
         ],
         Container(
           width: 4,
@@ -415,58 +293,253 @@ class _CoursesPageState extends State<CoursesPage> {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(2),
             gradient: const LinearGradient(
-              colors: AppColors.gradientGreen,
+              colors: AppColors.gradientPrimary,
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
             ),
+            boxShadow: [BoxShadow(color: AppColors.primary.withOpacity(0.3), blurRadius: 8, spreadRadius: -2)],
           ),
         ),
         const SizedBox(width: 12),
         Text(
           s.courses,
-          style: Theme.of(
-            context,
-          ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.w700,
+                color: AppColors.textPrimary,
+              ),
+        ),
+        const SizedBox(width: 12),
+        StreamBuilder<List<Course>>(
+          stream: widget.departmentId != null
+              ? _firestoreService.coursesByDepartmentStream(widget.departmentId!)
+              : _firestoreService.coursesStream(),
+          builder: (context, snapshot) {
+            final count = snapshot.data?.length ?? 0;
+            if (count == 0) return const SizedBox.shrink();
+            return Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                gradient: LinearGradient(
+                  colors: [AppColors.primary.withOpacity(0.08), AppColors.secondary.withOpacity(0.06)],
+                ),
+                border: Border.all(color: AppColors.primary.withOpacity(0.12)),
+              ),
+              child: Text(
+                '$count',
+                style: const TextStyle(color: AppColors.primary, fontSize: 12, fontWeight: FontWeight.w700),
+              ),
+            ).animate().scale(begin: const Offset(0.8, 0.8), duration: 400.ms, curve: Curves.easeOutBack);
+          },
         ),
         const Spacer(),
-        _AddButton(
+        _GradientAddButton(
           label: s.addCourse,
-          icon: Icons.add,
+          icon: Icons.add_rounded,
           onPressed: () => _showAddEditDialog(),
-          gradient: AppColors.gradientGreen,
+          gradient: AppColors.gradientPrimary,
         ),
       ],
-    ).animate().fade(duration: 400.ms).slideY(begin: 0.05);
+    ).animate().fade(duration: 450.ms).slideY(begin: 0.05, curve: Curves.easeOutCubic);
   }
 }
 
-/// Clickable video count badge for opening the management panel.
-class _VideoCountBadge extends StatefulWidget {
-  final int count;
+/// ─────────────────────────────────────────────────────────────────────────────
+/// Course Card — The beautifully padded white card for each item
+/// ─────────────────────────────────────────────────────────────────────────────
+class _CourseCard extends StatefulWidget {
+  final Course course;
   final bool isSelected;
-  final VoidCallback onTap;
+  final VoidCallback onVideoTap;
+  final VoidCallback onEdit;
+  final VoidCallback onDelete;
+  final VoidCallback onAddVideo;
 
-  const _VideoCountBadge({
-    required this.count,
+  const _CourseCard({
+    required this.course,
     required this.isSelected,
-    required this.onTap,
+    required this.onVideoTap,
+    required this.onEdit,
+    required this.onDelete,
+    required this.onAddVideo,
   });
 
   @override
-  State<_VideoCountBadge> createState() => _VideoCountBadgeState();
+  State<_CourseCard> createState() => _CourseCardState();
 }
 
-class _VideoCountBadgeState extends State<_VideoCountBadge> {
+class _CourseCardState extends State<_CourseCard> {
   bool _hovered = false;
 
   @override
   Widget build(BuildContext context) {
-    final color = widget.isSelected
-        ? AppColors.primary
-        : widget.count > 0
-            ? AppColors.secondary
-            : AppColors.textMuted;
+    final s = S.of(context);
 
+    return MouseRegion(
+      onEnter: (_) => setState(() => _hovered = true),
+      onExit: (_) => setState(() => _hovered = false),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeOutCubic,
+        transform: Matrix4.identity()..scale(_hovered ? 1.02 : 1.0),
+        transformAlignment: Alignment.center,
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(
+            color: widget.isSelected
+                ? AppColors.primary.withOpacity(0.3)
+                : AppColors.border.withOpacity(_hovered ? 0.3 : 0.15),
+            width: widget.isSelected ? 1.5 : 1.0,
+          ),
+          boxShadow: widget.isSelected
+              ? [BoxShadow(color: AppColors.primary.withOpacity(0.15), blurRadius: 32, spreadRadius: -4)]
+              : _hovered
+                  ? AppColors.elevatedShadow
+                  : AppColors.softShadow,
+        ),
+        child: Row(
+          children: [
+            // Cover Image
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 250),
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                color: AppColors.surfaceTinted,
+                image: widget.course.coverImageUrl.isNotEmpty
+                    ? DecorationImage(
+                        image: NetworkImage(widget.course.coverImageUrl),
+                        fit: BoxFit.cover,
+                      )
+                    : null,
+                border: Border.all(color: AppColors.border.withOpacity(0.2)),
+              ),
+              child: widget.course.coverImageUrl.isEmpty
+                  ? Icon(Icons.image_not_supported_rounded, color: AppColors.textMuted, size: 28)
+                  : null,
+            ),
+            const SizedBox(width: 20),
+            // Title & Status
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (widget.isSelected)
+                    ShaderMask(
+                      shaderCallback: (bounds) => const LinearGradient(colors: AppColors.gradientPrimary).createShader(bounds),
+                      child: Text(
+                        widget.course.title,
+                        style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w700),
+                      ),
+                    )
+                  else
+                    Text(
+                      widget.course.title,
+                      style: const TextStyle(color: AppColors.textPrimary, fontSize: 18, fontWeight: FontWeight.w700),
+                    ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      _StatusPill(
+                        isActive: widget.course.isActive,
+                        label: widget.course.isActive ? s.active : s.inactive,
+                      ),
+                      const SizedBox(width: 8),
+                      // Video Pill
+                      _VideoCountPill(
+                        count: widget.course.lectures.length,
+                        isSelected: widget.isSelected,
+                        onTap: widget.onVideoTap,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            // Actions
+            _AnimatedActionIconButton(
+              icon: Icons.video_call_rounded,
+              tooltip: s.isArabic ? 'رفع فيديو' : 'Add Video',
+              color: AppColors.primary,
+              onPressed: widget.onAddVideo,
+            ),
+            const SizedBox(width: 8),
+            _AnimatedActionIconButton(
+              icon: Icons.edit_rounded,
+              tooltip: s.edit,
+              color: AppColors.info,
+              onPressed: widget.onEdit,
+            ),
+            const SizedBox(width: 8),
+            _AnimatedActionIconButton(
+              icon: Icons.delete_outline_rounded,
+              tooltip: s.delete,
+              color: AppColors.error,
+              onPressed: widget.onDelete,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _StatusPill extends StatelessWidget {
+  final bool isActive;
+  final String label;
+
+  const _StatusPill({required this.isActive, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    final color = isActive ? AppColors.success : AppColors.textHint;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        color: color.withOpacity(0.08),
+        border: Border.all(color: color.withOpacity(0.2)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 6,
+            height: 6,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: color,
+              boxShadow: isActive ? [BoxShadow(color: color.withOpacity(0.5), blurRadius: 6)] : null,
+            ),
+          ),
+          const SizedBox(width: 6),
+          Text(label, style: TextStyle(color: color, fontSize: 11, fontWeight: FontWeight.w600)),
+        ],
+      ),
+    );
+  }
+}
+
+class _VideoCountPill extends StatefulWidget {
+  final int count;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _VideoCountPill({required this.count, required this.isSelected, required this.onTap});
+
+  @override
+  State<_VideoCountPill> createState() => _VideoCountPillState();
+}
+
+class _VideoCountPillState extends State<_VideoCountPill> {
+  bool _hovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final baseColor = widget.isSelected ? AppColors.primary : (widget.count > 0 ? AppColors.info : AppColors.textMuted);
     return MouseRegion(
       onEnter: (_) => setState(() => _hovered = true),
       onExit: (_) => setState(() => _hovered = false),
@@ -475,35 +548,22 @@ class _VideoCountBadgeState extends State<_VideoCountBadge> {
         onTap: widget.onTap,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            color: color.withValues(alpha: _hovered ? 0.2 : 0.1),
-            border: Border.all(
-              color: color.withValues(alpha: _hovered ? 0.5 : 0.25),
-            ),
+            borderRadius: BorderRadius.circular(12),
+            color: _hovered ? baseColor.withOpacity(0.12) : baseColor.withOpacity(0.06),
+            border: Border.all(color: baseColor.withOpacity(_hovered ? 0.3 : 0.15)),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(
-                Icons.play_circle_outline_rounded,
-                size: 14,
-                color: color,
-              ),
-              const SizedBox(width: 4),
-              Text(
-                '${widget.count}',
-                style: TextStyle(
-                  color: color,
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+              Icon(Icons.play_circle_outline_rounded, size: 14, color: baseColor),
+              const SizedBox(width: 6),
+              Text('${widget.count} Videos', style: TextStyle(color: baseColor, fontSize: 11, fontWeight: FontWeight.w600)),
               if (_hovered) ...[
                 const SizedBox(width: 4),
-                Icon(Icons.arrow_forward_ios_rounded, size: 10, color: color),
-              ],
+                Icon(Icons.arrow_forward_ios_rounded, size: 8, color: baseColor),
+              ]
             ],
           ),
         ),
@@ -512,26 +572,99 @@ class _VideoCountBadgeState extends State<_VideoCountBadge> {
   }
 }
 
-class _AddButton extends StatefulWidget {
+class _AnimatedActionIconButton extends StatefulWidget {
+  final IconData icon;
+  final String tooltip;
+  final Color color;
+  final VoidCallback onPressed;
+
+  const _AnimatedActionIconButton({required this.icon, required this.tooltip, required this.color, required this.onPressed});
+
+  @override
+  State<_AnimatedActionIconButton> createState() => _AnimatedActionIconButtonState();
+}
+
+class _AnimatedActionIconButtonState extends State<_AnimatedActionIconButton> {
+  bool _hovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Tooltip(
+      message: widget.tooltip,
+      child: MouseRegion(
+        onEnter: (_) => setState(() => _hovered = true),
+        onExit: (_) => setState(() => _hovered = false),
+        cursor: SystemMouseCursors.click,
+        child: GestureDetector(
+          onTap: widget.onPressed,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            width: 40,
+            height: 40,
+            transform: Matrix4.identity()..scale(_hovered ? 1.1 : 1.0),
+            transformAlignment: Alignment.center,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(14),
+              color: _hovered ? widget.color.withOpacity(0.1) : AppColors.surfaceTinted,
+              border: Border.all(color: _hovered ? widget.color.withOpacity(0.2) : AppColors.border.withOpacity(0.4)),
+            ),
+            child: Icon(widget.icon, color: _hovered ? widget.color : AppColors.textSecondary, size: 20),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _BackButton extends StatefulWidget {
+  final VoidCallback onTap;
+  const _BackButton({required this.onTap});
+  @override
+  State<_BackButton> createState() => _BackButtonState();
+}
+
+class _BackButtonState extends State<_BackButton> {
+  bool _hovered = false;
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      onEnter: (_) => setState(() => _hovered = true),
+      onExit: (_) => setState(() => _hovered = false),
+      child: GestureDetector(
+        onTap: widget.onTap,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          width: 40,
+          height: 40,
+          transform: Matrix4.identity()..scale(_hovered ? 1.06 : 1.0),
+          transformAlignment: Alignment.center,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            color: _hovered ? AppColors.primary.withOpacity(0.06) : AppColors.surfaceTinted,
+            border: Border.all(color: _hovered ? AppColors.primary.withOpacity(0.15) : AppColors.border.withOpacity(0.4)),
+          ),
+          child: Icon(Icons.arrow_back_rounded, color: _hovered ? AppColors.primary : AppColors.textSecondary, size: 20),
+        ),
+      ),
+    );
+  }
+}
+
+class _GradientAddButton extends StatefulWidget {
   final String label;
   final VoidCallback onPressed;
   final List<Color> gradient;
   final IconData icon;
 
-  const _AddButton({
-    required this.label,
-    required this.icon,
-    required this.onPressed,
-    this.gradient = AppColors.gradientViolet,
-  });
+  const _GradientAddButton({required this.label, required this.icon, required this.onPressed, this.gradient = AppColors.gradientPrimary});
 
   @override
-  State<_AddButton> createState() => _AddButtonState();
+  State<_GradientAddButton> createState() => _GradientAddButtonState();
 }
 
-class _AddButtonState extends State<_AddButton> {
+class _GradientAddButtonState extends State<_GradientAddButton> {
   bool _hovered = false;
-
   @override
   Widget build(BuildContext context) {
     return MouseRegion(
@@ -541,34 +674,21 @@ class _AddButtonState extends State<_AddButton> {
       child: GestureDetector(
         onTap: widget.onPressed,
         child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          duration: const Duration(milliseconds: 220),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          transform: Matrix4.identity()..scale(_hovered ? 1.03 : 1.0),
+          transformAlignment: Alignment.center,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            gradient: LinearGradient(colors: widget.gradient),
-            boxShadow: [
-              BoxShadow(
-                color: widget.gradient.first.withValues(
-                  alpha: _hovered ? 0.4 : 0.2,
-                ),
-                blurRadius: _hovered ? 20 : 12,
-                spreadRadius: -4,
-              ),
-            ],
+            borderRadius: BorderRadius.circular(14),
+            gradient: LinearGradient(colors: _hovered ? widget.gradient.map((c) => Color.lerp(c, Colors.white, 0.1) ?? c).toList() : widget.gradient),
+            boxShadow: AppColors.gradientGlow(widget.gradient.first, hovered: _hovered),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               Icon(widget.icon, color: Colors.white, size: 18),
               const SizedBox(width: 8),
-              Text(
-                widget.label,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
+              Text(widget.label, style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600, letterSpacing: 0.2)),
             ],
           ),
         ),

@@ -1,20 +1,11 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:dashboard/core/providers/groups_provider.dart';
 import 'package:dashboard/core/models/group_model.dart';
+import 'package:dashboard/core/theme/app_theme.dart';
 import 'package:intl/intl.dart';
 import 'package:dashboard/screens/dashboard/group_messages_page.dart';
-
-/// Design tokens.
-class _C {
-  static const primary = Color(0xFF6C5CE7);
-  static const error = Color(0xFFFF5252);
-  static const info = Color(0xFF448AFF);
-  static const card = Color(0xFF1E1E36);
-  static const surfaceLight = Color(0xFF252542);
-  static const border = Color(0xFF2A2A45);
-  static const textMuted = Color(0xFF6B6B8D);
-}
 
 class GroupsPage extends StatefulWidget {
   const GroupsPage({super.key});
@@ -45,19 +36,26 @@ class _GroupsPageState extends State<GroupsPage> {
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 14, vertical: 6),
                 decoration: BoxDecoration(
-                  color: _C.info.withValues(alpha: 0.15),
+                  color: AppColors.info.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                      color: AppColors.info.withValues(alpha: 0.15)),
                 ),
                 child: Text(
                   '${provider.groups.length} مجموعة • ${provider.totalMembers} عضو',
-                  style: const TextStyle(color: _C.info, fontWeight: FontWeight.w600, fontSize: 13),
+                  style: const TextStyle(
+                      color: AppColors.info,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 13),
                 ),
               ),
               const Spacer(),
               ElevatedButton.icon(
-                onPressed: () => _showCreateDialog(context, provider),
+                onPressed: () =>
+                    _showCreateDialog(context, provider),
                 icon: const Icon(Icons.add, size: 18),
                 label: const Text('مجموعة جديدة'),
               ),
@@ -68,13 +66,19 @@ class _GroupsPageState extends State<GroupsPage> {
           // Groups list
           Expanded(
             child: provider.isLoading
-                ? const Center(child: CircularProgressIndicator(color: _C.primary))
+                ? const Center(
+                    child: CircularProgressIndicator(
+                        color: AppColors.primary))
                 : provider.groups.isEmpty
-                    ? const Center(child: Text('لا توجد مجموعات', style: TextStyle(color: _C.textMuted)))
+                    ? Center(
+                        child: Text('لا توجد مجموعات',
+                            style: TextStyle(
+                                color: AppColors.textHint)))
                     : ListView.builder(
                         itemCount: provider.groups.length,
                         itemBuilder: (context, index) {
-                          return _buildGroupTile(context, provider.groups[index], provider);
+                          return _buildGroupTile(context,
+                              provider.groups[index], provider);
                         },
                       ),
           ),
@@ -83,36 +87,60 @@ class _GroupsPageState extends State<GroupsPage> {
     );
   }
 
-  Widget _buildGroupTile(BuildContext context, GroupModel group, GroupsProvider provider) {
+  Widget _buildGroupTile(BuildContext context, GroupModel group,
+      GroupsProvider provider) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 8),
+      margin: const EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
-        color: _C.card,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: _C.border),
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(16),
+        border:
+            Border.all(color: AppColors.border.withOpacity(0.3)),
+        boxShadow: AppColors.softShadow,
       ),
       child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        contentPadding: const EdgeInsets.symmetric(
+            horizontal: 20, vertical: 8),
         leading: CircleAvatar(
-          backgroundColor: _C.info.withValues(alpha: 0.15),
+          backgroundColor:
+              AppColors.info.withValues(alpha: 0.1),
           child: Text(
             group.name.isNotEmpty ? group.name[0] : '?',
-            style: const TextStyle(color: _C.info, fontWeight: FontWeight.bold),
+            style: const TextStyle(
+                color: AppColors.info,
+                fontWeight: FontWeight.bold),
           ),
         ),
-        title: Text(group.name, style: const TextStyle(fontWeight: FontWeight.w600)),
+        title: Text(group.name,
+            style: const TextStyle(
+                fontWeight: FontWeight.w600,
+                color: AppColors.textPrimary)),
         subtitle: Row(
           children: [
-            Text('${group.memberCount} عضو', style: const TextStyle(color: _C.textMuted, fontSize: 12)),
+            Text('${group.memberCount} عضو',
+                style: const TextStyle(
+                    color: AppColors.textSecondary,
+                    fontSize: 12)),
             const SizedBox(width: 12),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-              decoration: BoxDecoration(color: _C.surfaceLight, borderRadius: BorderRadius.circular(8)),
-              child: Text(group.category, style: const TextStyle(color: _C.textMuted, fontSize: 11)),
+              padding: const EdgeInsets.symmetric(
+                  horizontal: 8, vertical: 2),
+              decoration: BoxDecoration(
+                  color: AppColors.surfaceTinted,
+                  borderRadius: BorderRadius.circular(8)),
+              child: Text(group.category,
+                  style: const TextStyle(
+                      color: AppColors.textSecondary,
+                      fontSize: 11)),
             ),
             if (group.lastMessageTime != null) ...[
               const SizedBox(width: 12),
-              Text(DateFormat('MM/dd HH:mm').format(group.lastMessageTime!), style: const TextStyle(color: _C.textMuted, fontSize: 11)),
+              Text(
+                  DateFormat('MM/dd HH:mm')
+                      .format(group.lastMessageTime!),
+                  style: const TextStyle(
+                      color: AppColors.textHint,
+                      fontSize: 11)),
             ],
           ],
         ),
@@ -121,25 +149,38 @@ class _GroupsPageState extends State<GroupsPage> {
           children: [
             IconButton(
               tooltip: 'عرض الرسائل',
-              icon: const Icon(Icons.message_outlined, size: 20, color: _C.primary),
+              icon: const Icon(Icons.message_outlined,
+                  size: 20, color: AppColors.primary),
               onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (_) => GroupMessagesPage(group: group)));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) =>
+                            GroupMessagesPage(group: group)));
               },
             ),
             IconButton(
               tooltip: 'حذف المجموعة',
-              icon: const Icon(Icons.delete_outline, size: 20, color: _C.error),
+              icon: const Icon(Icons.delete_outline,
+                  size: 20, color: AppColors.error),
               onPressed: () {
                 showDialog(
                   context: context,
                   builder: (ctx) => AlertDialog(
                     title: const Text('حذف المجموعة'),
-                    content: Text('هل أنت متأكد من حذف "${group.name}" وجميع رسائلها؟'),
+                    content: Text(
+                        'هل أنت متأكد من حذف "${group.name}" وجميع رسائلها؟'),
                     actions: [
-                      TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('إلغاء')),
+                      TextButton(
+                          onPressed: () => Navigator.pop(ctx),
+                          child: const Text('إلغاء')),
                       ElevatedButton(
-                        onPressed: () { Navigator.pop(ctx); provider.deleteGroup(group.id); },
-                        style: ElevatedButton.styleFrom(backgroundColor: _C.error),
+                        onPressed: () {
+                          Navigator.pop(ctx);
+                          provider.deleteGroup(group.id);
+                        },
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.error),
                         child: const Text('حذف'),
                       ),
                     ],
@@ -153,7 +194,8 @@ class _GroupsPageState extends State<GroupsPage> {
     );
   }
 
-  void _showCreateDialog(BuildContext context, GroupsProvider provider) {
+  void _showCreateDialog(
+      BuildContext context, GroupsProvider provider) {
     final nameC = TextEditingController();
     final descC = TextEditingController();
     String category = 'Engineering';
@@ -168,31 +210,49 @@ class _GroupsPageState extends State<GroupsPage> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                TextField(controller: nameC, decoration: const InputDecoration(labelText: 'اسم المجموعة')),
+                TextField(
+                    controller: nameC,
+                    decoration: const InputDecoration(
+                        labelText: 'اسم المجموعة')),
                 const SizedBox(height: 16),
-                TextField(controller: descC, decoration: const InputDecoration(labelText: 'الوصف')),
+                TextField(
+                    controller: descC,
+                    decoration:
+                        const InputDecoration(labelText: 'الوصف')),
                 const SizedBox(height: 16),
                 DropdownButtonFormField<String>(
                   initialValue: category,
-                  decoration: const InputDecoration(labelText: 'التصنيف'),
+                  decoration: const InputDecoration(
+                      labelText: 'التصنيف'),
                   items: const [
-                    DropdownMenuItem(value: 'Engineering', child: Text('هندسة')),
-                    DropdownMenuItem(value: 'Medicine', child: Text('طب')),
-                    DropdownMenuItem(value: 'Science', child: Text('علوم')),
-                    DropdownMenuItem(value: 'General', child: Text('عام')),
+                    DropdownMenuItem(
+                        value: 'Engineering',
+                        child: Text('هندسة')),
+                    DropdownMenuItem(
+                        value: 'Medicine', child: Text('طب')),
+                    DropdownMenuItem(
+                        value: 'Science', child: Text('علوم')),
+                    DropdownMenuItem(
+                        value: 'General', child: Text('عام')),
                   ],
-                  onChanged: (v) => setState(() => category = v ?? category),
+                  onChanged: (v) =>
+                      setState(() => category = v ?? category),
                 ),
               ],
             ),
           ),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('إلغاء')),
+            TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: const Text('إلغاء')),
             ElevatedButton(
               onPressed: () async {
                 if (nameC.text.trim().isEmpty) return;
                 Navigator.pop(ctx);
-                await provider.createGroup(name: nameC.text.trim(), description: descC.text.trim(), category: category);
+                await provider.createGroup(
+                    name: nameC.text.trim(),
+                    description: descC.text.trim(),
+                    category: category);
               },
               child: const Text('إنشاء'),
             ),

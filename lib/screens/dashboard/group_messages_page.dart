@@ -3,20 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:dashboard/core/providers/groups_provider.dart';
 import 'package:dashboard/core/models/group_model.dart';
 import 'package:dashboard/core/models/message_model.dart';
+import 'package:dashboard/core/theme/app_theme.dart';
 import 'package:intl/intl.dart';
-
-class _C {
-  static const primary = Color(0xFF6C5CE7);
-  static const accent = Color(0xFF00CEFF);
-  static const error = Color(0xFFFF5252);
-  static const info = Color(0xFF448AFF);
-  static const card = Color(0xFF1E1E36);
-  static const surface = Color(0xFF1A1A2E);
-  static const border = Color(0xFF2A2A45);
-  static const textPrimary = Color(0xFFF0F0F5);
-  static const textMuted = Color(0xFF6B6B8D);
-  static const background = Color(0xFF0F0F1A);
-}
 
 /// Message moderation screen — view and delete messages in a group.
 class GroupMessagesPage extends StatelessWidget {
@@ -29,34 +17,49 @@ class GroupMessagesPage extends StatelessWidget {
     final provider = context.read<GroupsProvider>();
 
     return Scaffold(
-      backgroundColor: _C.background,
+      backgroundColor: AppColors.canvas,
       appBar: AppBar(
-        backgroundColor: _C.surface,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         title: Row(
           children: [
-            Text('رسائل: ${group.name}'),
+            Text('رسائل: ${group.name}',
+                style: const TextStyle(
+                    color: AppColors.textPrimary)),
             const SizedBox(width: 12),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              padding: const EdgeInsets.symmetric(
+                  horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
-                color: _C.info.withValues(alpha: 0.15),
+                color: AppColors.info.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Text('${group.memberCount} عضو', style: const TextStyle(color: _C.info, fontSize: 12)),
+              child: Text('${group.memberCount} عضو',
+                  style: const TextStyle(
+                      color: AppColors.info, fontSize: 12)),
             ),
           ],
         ),
+        iconTheme:
+            const IconThemeData(color: AppColors.textPrimary),
       ),
       body: StreamBuilder<List<MessageModel>>(
         stream: provider.getMessages(group.id),
         builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator(color: _C.primary));
+          if (snapshot.connectionState ==
+              ConnectionState.waiting) {
+            return const Center(
+                child: CircularProgressIndicator(
+                    color: AppColors.primary));
           }
 
           final messages = snapshot.data ?? [];
           if (messages.isEmpty) {
-            return const Center(child: Text('لا توجد رسائل في هذه المجموعة', style: TextStyle(color: _C.textMuted)));
+            return Center(
+                child: Text(
+                    'لا توجد رسائل في هذه المجموعة',
+                    style: TextStyle(
+                        color: AppColors.textHint)));
           }
 
           return ListView.builder(
@@ -64,7 +67,8 @@ class GroupMessagesPage extends StatelessWidget {
             itemCount: messages.length,
             itemBuilder: (context, index) {
               final msg = messages[index];
-              return _buildMessageItem(context, msg, provider);
+              return _buildMessageItem(
+                  context, msg, provider);
             },
           );
         },
@@ -72,24 +76,33 @@ class GroupMessagesPage extends StatelessWidget {
     );
   }
 
-  Widget _buildMessageItem(BuildContext context, MessageModel msg, GroupsProvider provider) {
+  Widget _buildMessageItem(BuildContext context,
+      MessageModel msg, GroupsProvider provider) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 8),
+      margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: _C.card,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: _C.border),
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(16),
+        border:
+            Border.all(color: AppColors.border.withOpacity(0.3)),
+        boxShadow: AppColors.softShadow,
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           CircleAvatar(
             radius: 16,
-            backgroundColor: _C.primary.withValues(alpha: 0.15),
+            backgroundColor:
+                AppColors.primary.withValues(alpha: 0.1),
             child: Text(
-              msg.senderName.isNotEmpty ? msg.senderName[0] : '?',
-              style: const TextStyle(color: _C.primary, fontSize: 12, fontWeight: FontWeight.bold),
+              msg.senderName.isNotEmpty
+                  ? msg.senderName[0]
+                  : '?',
+              style: const TextStyle(
+                  color: AppColors.primary,
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold),
             ),
           ),
           const SizedBox(width: 12),
@@ -98,19 +111,40 @@ class GroupMessagesPage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(children: [
-                  Text(msg.senderName, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: _C.primary)),
+                  Text(msg.senderName,
+                      style: const TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 13,
+                          color: AppColors.primary)),
                   const SizedBox(width: 8),
-                  Text(DateFormat('yyyy/MM/dd HH:mm').format(msg.timestamp), style: const TextStyle(color: _C.textMuted, fontSize: 11)),
+                  Text(
+                      DateFormat('yyyy/MM/dd HH:mm')
+                          .format(msg.timestamp),
+                      style: const TextStyle(
+                          color: AppColors.textHint,
+                          fontSize: 11)),
                 ]),
                 const SizedBox(height: 4),
-                if (msg.text.isNotEmpty) Text(msg.text, style: const TextStyle(color: _C.textPrimary, fontSize: 14)),
+                if (msg.text.isNotEmpty)
+                  Text(msg.text,
+                      style: const TextStyle(
+                          color: AppColors.textPrimary,
+                          fontSize: 14)),
                 if (msg.fileUrl != null)
                   Padding(
                     padding: const EdgeInsets.only(top: 4),
                     child: Row(children: [
-                      Icon(msg.fileType == 'image' ? Icons.image : Icons.attach_file, size: 14, color: _C.accent),
+                      Icon(
+                          msg.fileType == 'image'
+                              ? Icons.image
+                              : Icons.attach_file,
+                          size: 14,
+                          color: AppColors.secondary),
                       const SizedBox(width: 4),
-                      Text(msg.fileName ?? 'مرفق', style: const TextStyle(color: _C.accent, fontSize: 12)),
+                      Text(msg.fileName ?? 'مرفق',
+                          style: const TextStyle(
+                              color: AppColors.secondary,
+                              fontSize: 12)),
                     ]),
                   ),
               ],
@@ -118,18 +152,27 @@ class GroupMessagesPage extends StatelessWidget {
           ),
           IconButton(
             tooltip: 'حذف الرسالة',
-            icon: const Icon(Icons.delete_outline, size: 18, color: _C.error),
+            icon: const Icon(Icons.delete_outline,
+                size: 18, color: AppColors.error),
             onPressed: () {
               showDialog(
                 context: context,
                 builder: (ctx) => AlertDialog(
                   title: const Text('حذف الرسالة'),
-                  content: const Text('هل تريد حذف هذه الرسالة؟'),
+                  content:
+                      const Text('هل تريد حذف هذه الرسالة؟'),
                   actions: [
-                    TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('إلغاء')),
+                    TextButton(
+                        onPressed: () => Navigator.pop(ctx),
+                        child: const Text('إلغاء')),
                     ElevatedButton(
-                      onPressed: () { Navigator.pop(ctx); provider.deleteMessage(group.id, msg.messageId); },
-                      style: ElevatedButton.styleFrom(backgroundColor: _C.error),
+                      onPressed: () {
+                        Navigator.pop(ctx);
+                        provider.deleteMessage(
+                            group.id, msg.messageId);
+                      },
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.error),
                       child: const Text('حذف'),
                     ),
                   ],
