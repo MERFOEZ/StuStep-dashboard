@@ -163,6 +163,37 @@ class FirestoreService {
     });
   }
 
+  /// Update a specific lecture's metadata (name/url) by its index in the array.
+  Future<void> updateLecture(String courseId, int lectureIndex, String newName, String newUrl) async {
+    final doc = await _courses.doc(courseId).get();
+    if (!doc.exists) return;
+    final data = doc.data() as Map<String, dynamic>? ?? {};
+    final lectures = List<Map<String, dynamic>>.from(
+      (data['lectures'] as List<dynamic>?)?.map((e) => Map<String, dynamic>.from(e as Map)) ?? [],
+    );
+    if (lectureIndex < 0 || lectureIndex >= lectures.length) return;
+    lectures[lectureIndex] = {'name': newName, 'url': newUrl};
+    await _courses.doc(courseId).update({'lectures': lectures});
+  }
+
+  /// Remove a specific lecture from a course by its index.
+  Future<void> removeLecture(String courseId, int lectureIndex) async {
+    final doc = await _courses.doc(courseId).get();
+    if (!doc.exists) return;
+    final data = doc.data() as Map<String, dynamic>? ?? {};
+    final lectures = List<Map<String, dynamic>>.from(
+      (data['lectures'] as List<dynamic>?)?.map((e) => Map<String, dynamic>.from(e as Map)) ?? [],
+    );
+    if (lectureIndex < 0 || lectureIndex >= lectures.length) return;
+    lectures.removeAt(lectureIndex);
+    await _courses.doc(courseId).update({'lectures': lectures});
+  }
+
+  /// Reorder lectures array for a course.
+  Future<void> reorderLectures(String courseId, List<Map<String, dynamic>> reorderedLectures) async {
+    await _courses.doc(courseId).update({'lectures': reorderedLectures});
+  }
+
   Future<void> updateCourse(Course course) async {
     await _courses.doc(course.id).update({
       'title': course.title,

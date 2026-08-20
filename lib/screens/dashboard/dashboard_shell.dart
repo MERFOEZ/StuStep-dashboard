@@ -7,9 +7,13 @@ import 'package:dashboard/screens/dashboard/dashboard_home.dart';
 import 'package:dashboard/screens/dashboard/colleges_page.dart';
 import 'package:dashboard/screens/dashboard/departments_page.dart';
 import 'package:dashboard/screens/dashboard/courses_page.dart';
-import 'package:dashboard/screens/dashboard/store_page.dart';
+import 'package:dashboard/screens/dashboard/overview_page.dart';
+import 'package:dashboard/screens/dashboard/users_page.dart';
+import 'package:dashboard/screens/dashboard/groups_page.dart';
+import 'package:dashboard/screens/dashboard/ai_conversations_page.dart';
+import 'package:dashboard/screens/dashboard/settings_page.dart';
 
-enum DashboardView { home, colleges, departments, courses, store }
+enum DashboardView { home, colleges, departments, courses, overview, users, groups, aiChats, settings }
 
 /// Main dashboard shell with sidebar, top bar, and animated page switching.
 class DashboardShell extends StatefulWidget {
@@ -42,11 +46,16 @@ class _DashboardShellState extends State<DashboardShell> {
       _selectedIndex = index;
       _selectedCollegeId = null;
       _selectedDepartmentId = null;
-      if (index == 0) {
-        _currentView = DashboardView.home;
-      } else if (index == 1) _currentView = DashboardView.colleges;
-      else if (index == 2) _currentView = DashboardView.store;
-      else _currentView = DashboardView.home;
+      switch (index) {
+        case 0: _currentView = DashboardView.home;
+        case 1: _currentView = DashboardView.colleges;
+        case 2: _currentView = DashboardView.overview;
+        case 3: _currentView = DashboardView.users;
+        case 4: _currentView = DashboardView.groups;
+        case 5: _currentView = DashboardView.aiChats;
+        case 6: _currentView = DashboardView.settings;
+        default: _currentView = DashboardView.home;
+      }
     });
   }
 
@@ -88,8 +97,16 @@ class _DashboardShellState extends State<DashboardShell> {
         return s.departments;
       case DashboardView.courses:
         return s.courses;
-      case DashboardView.store:
-        return s.store;
+      case DashboardView.overview:
+        return 'نظرة عامة';
+      case DashboardView.users:
+        return 'المستخدمين';
+      case DashboardView.groups:
+        return 'المجموعات';
+      case DashboardView.aiChats:
+        return 'محادثات AI';
+      case DashboardView.settings:
+        return 'الإعدادات';
     }
   }
 
@@ -118,8 +135,16 @@ class _DashboardShellState extends State<DashboardShell> {
           departmentId: _selectedDepartmentId,
           onBack: _backToDepartments,
         );
-      case DashboardView.store:
-        return const StorePage(key: ValueKey('store'));
+      case DashboardView.overview:
+        return const OverviewPage(key: ValueKey('overview'));
+      case DashboardView.users:
+        return const UsersPage(key: ValueKey('users'));
+      case DashboardView.groups:
+        return const GroupsPage(key: ValueKey('groups'));
+      case DashboardView.aiChats:
+        return const AIConversationsPage(key: ValueKey('aiChats'));
+      case DashboardView.settings:
+        return const SettingsPage(key: ValueKey('settings'));
     }
   }
 

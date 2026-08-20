@@ -29,7 +29,11 @@ class _GlassSidebarState extends State<GlassSidebar> {
     final items = <_SidebarItem>[
       _SidebarItem(Icons.dashboard_rounded, s.appTitle.split(' ').first, 'Dashboard'),
       _SidebarItem(Icons.account_balance_rounded, s.academicStructure, 'Colleges'),
-      _SidebarItem(Icons.storefront_rounded, s.store, 'Store'),
+      _SidebarItem(Icons.analytics_rounded, 'نظرة عامة', 'Overview'),
+      _SidebarItem(Icons.people_rounded, 'المستخدمين', 'Users'),
+      _SidebarItem(Icons.chat_rounded, 'المجموعات', 'Groups'),
+      _SidebarItem(Icons.smart_toy_rounded, 'محادثات AI', 'AI Chats'),
+      _SidebarItem(Icons.settings_rounded, 'الإعدادات', 'Settings'),
     ];
 
     final width = _collapsed ? 72.0 : 240.0;

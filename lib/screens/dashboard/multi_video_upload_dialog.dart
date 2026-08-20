@@ -191,7 +191,7 @@ class _MultiVideoUploadDialogState extends State<MultiVideoUploadDialog> {
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  '${s.isArabic ? 'المستوى:' : 'Level:'} ${widget.level.title}',
+                  '${s.isArabic ? 'الدورة:' : 'Course:'} ${widget.level.title}',
                   style: const TextStyle(
                     color: AppColors.primaryLight,
                     fontWeight: FontWeight.bold,

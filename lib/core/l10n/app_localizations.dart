@@ -35,21 +35,21 @@ class S {
       _t('لا يمكن التراجع عن هذا الإجراء', 'This action cannot be undone');
   String get noData => _t('لا توجد بيانات', 'No data');
   String get cascadeDeleteCollegeWarning =>
-      _t('سيتم حذف هذه الكلية وجميع التخصصات والمستويات التابعة لها نهائياً. هل أنت متأكد؟',
-         'This will permanently delete the college and ALL its majors and levels. Are you sure?');
+      _t('سيتم حذف هذه الكلية وجميع التخصصات والدورات التابعة لها نهائياً. هل أنت متأكد؟',
+         'This will permanently delete the college and ALL its majors and courses. Are you sure?');
   String get cascadeDeleteDepartmentWarning =>
-      _t('سيتم حذف هذا التخصص وجميع المستويات التابعة له نهائياً. هل أنت متأكد؟',
-         'This will permanently delete the major and ALL its levels. Are you sure?');
+      _t('سيتم حذف هذا التخصص وجميع الدورات التابعة له نهائياً. هل أنت متأكد؟',
+         'This will permanently delete the major and ALL its courses. Are you sure?');
 
   // ─── Navigation ─────────────────────────────────────────────────────
   String get colleges => _t('الكليات', 'Colleges');
   String get academicStructure => _t('الهيكلة الأكاديمية', 'Academic Structure');
   String get departments => _t('التخصصات', 'Majors');
-  String get courses => _t('المستويات', 'Levels');
+  String get courses => _t('الدورات', 'Courses');
   String get store => _t('المتجر', 'Store');
   String get back => _t('رجوع', 'Back');
   String get viewMajors => _t('عرض التخصصات', 'View Majors');
-  String get viewLevels => _t('عرض المستويات', 'View Levels');
+  String get viewLevels => _t('عرض الدورات', 'View Courses');
 
   // ─── Colleges ───────────────────────────────────────────────────────
   String get collegeName => _t('اسم الكلية', 'College Name');
@@ -81,22 +81,22 @@ class S {
   String get departmentDeleted =>
       _t('تم حذف التخصص بنجاح', 'Major deleted successfully');
 
-  // ─── Courses (Levels) ───────────────────────────────────────────────
-  String get courseTitle => _t('اسم المستوى', 'Level Name');
-  String get addCourse => _t('إضافة مستوى', 'Add Level');
-  String get editCourse => _t('تعديل المستوى', 'Edit Level');
+  // ─── Courses ────────────────────────────────────────────────────────
+  String get courseTitle => _t('اسم الدورة', 'Course Name');
+  String get addCourse => _t('إضافة دورة', 'Add Course');
+  String get editCourse => _t('تعديل الدورة', 'Edit Course');
   String get selectDepartment => _t('اختر التخصص', 'Select Major');
   String get department => _t('التخصص', 'Major');
   String get coverImage => _t('صورة الغلاف', 'Cover Image');
   String get coverImageUrl => _t('رابط صورة الغلاف', 'Cover Image URL');
   String get noCourses =>
-      _t('لا توجد مستويات بعد — أضف واحداً!', 'No levels yet — add one!');
+      _t('لا توجد دورات بعد — أضف واحدة!', 'No courses yet — add one!');
   String get courseAdded =>
-      _t('تمت إضافة المستوى بنجاح', 'Level added successfully');
+      _t('تمت إضافة الدورة بنجاح', 'Course added successfully');
   String get courseUpdated =>
-      _t('تم تحديث المستوى بنجاح', 'Level updated successfully');
+      _t('تم تحديث الدورة بنجاح', 'Course updated successfully');
   String get courseDeleted =>
-      _t('تم حذف المستوى بنجاح', 'Level deleted successfully');
+      _t('تم حذف الدورة بنجاح', 'Course deleted successfully');
 
   // ─── Store ──────────────────────────────────────────────────────────
   String get itemTitle => _t('عنوان العنصر', 'Item Title');
@@ -144,7 +144,7 @@ class S {
   String get ongoing => _t('مستمر', 'Ongoing');
   String get totalColleges => _t('إجمالي عدد الكليات المسجلة', 'Total registered colleges');
   String get totalDepartments => _t('إجمالي عدد التخصصات', 'Total majors');
-  String get totalCourses => _t('إجمالي عدد المستويات', 'Total levels');
+  String get totalCourses => _t('إجمالي عدد الدورات', 'Total courses');
   String get totalStoreItems => _t('إجمالي عناصر المتجر', 'Total store items');
   String get expand => _t('توسيع', 'Expand');
   String get collapse => _t('طي', 'Collapse');
